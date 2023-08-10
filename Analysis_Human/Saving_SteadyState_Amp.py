@@ -32,6 +32,8 @@ subjlist = ['S268', 'S274', 'S282', 'S285',
             'S291', 'S310', 'S339', 'S355',  
             'S272', 'S069', 'S088', 'S309', 'S345']
 
+subjlist = ['S069', 'S072', 'S']
+
 ### Need 'S246','S104', 'S345',
 #Removed --  'S273'
 #%% Loading all subjects' data 

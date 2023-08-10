@@ -35,12 +35,12 @@ plt.rcParams['figure.dpi'] = 120
 
 # %% Loading subjects, reading data, mark bad channels
 
-froot = 'D:/PhD/Data/MTB_EP - GDT, Binding, mTRF/Binding/'  # file location
+froot = 'F:/PhD/Data/MTB_EP - GDT, Binding, mTRF/Binding/'  # file location
 save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
-save_loc_mat= 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
+save_loc_mat= 'F:/PhD/Data/Binding_matfiles/1-40Hz/'
 save_epochs_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Epochs-fif/'
 
-subjlist = ['S337']
+subjlist = ['S269']
 
 # 'S273', 'S268', 'S274', 'S282', 'S285',
 #             'S277', 'S279', 'S280', 'S259', 'S270', 
@@ -188,7 +188,12 @@ for subj in subjlist:
         raw.info['bads'].append('A30')
         raw.info['bads'].append('A2')
         raw.info['bads'].append('A29')
-        
+    
+    if subj == 'S308':
+       raw.info['bads'].append('A7') 
+       raw.info['bads'].append('A11') 
+       raw.info['bads'].append('A24') 
+       
 #%% Filtering for cortical responses 
 
     raw.filter(1, 40.)
