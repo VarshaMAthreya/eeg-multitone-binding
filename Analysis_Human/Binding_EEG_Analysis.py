@@ -35,25 +35,12 @@ plt.rcParams['figure.dpi'] = 120
 
 # %% Loading subjects, reading data, mark bad channels
 
-froot = 'F:/PhD/Data/MTB_EP - GDT, Binding, mTRF/Binding/'  # file location
+froot = 'D:/PhD/Data/MTB_EP - GDT, Binding, mTRF/Binding/'  # file location
 save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
-save_loc_mat= 'F:/PhD/Data/Binding_matfiles/1-40Hz/'
+save_loc_mat= 'D:/PhD/Data/Binding_matfiles/0.4-40Hz/'
 save_epochs_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Epochs-fif/'
 
-subjlist = ['S269']
-
-# 'S273', 'S268', 'S274', 'S282', 'S285',
-#             'S277', 'S279', 'S280', 'S259', 'S270', 
-#             'S271', 'S281', 'S290', 'S284', 'S305',
-#             'S303', 'S288', 'S260', 'S352', 'S341',
-#             'S312', 'S347', 'S340', 'S078', 'S069',
-#             'S088', 'S342', 'S072', 
-#             'S105', 'S345', 'S291', 'S310',
-#             'S339', 'S355', 'S309', 'S272', 'S246',
-
-#  #'S337' Missing EXGs
-#'S211', 'S207', 
-#  'S358', 'S308', 'S344',
+subjlist = ['S104']
  
 condlist = [1, 2]  # List of conditions- Coherence of 12 and 20 tones
 condnames = ['12', '20']
@@ -74,7 +61,7 @@ for subj in subjlist:
         rawlist += [rawtemp, ]
         evelist += [evestemp, ]
     raw, eves = mne.concatenate_raws(rawlist, events_list=evelist)
-    raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6), event_color={1: 'r', 2: 'g'})    # To check and mark bad channels
+    # raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6), event_color={1: 'r', 2: 'g'})    # To check and mark bad channels
 
 #%% Reject a few of the electrodes for each subject
   
@@ -181,6 +168,9 @@ for subj in subjlist:
         raw.info['bads'].append('A25')
         raw.info['bads'].append('A17')  
         raw.info['bads'].append('A21')
+        raw.info['bads'].append('A29')
+        raw.info['bads'].append('A30')
+        raw.info['bads'].append('A28')
         
     if subj == 'S337':
         raw.info['bads'].append('A21')
@@ -272,7 +262,7 @@ for subj in subjlist:
         #evkd[cnd].plot(picks=31,titles=conds[cnd])
     
     # Also get whole interval without baselining each interval
-    conds.extend(['12', '20' ])
+    conds.extend(['12', '20'])
     ep_cnd = mne.Epochs(raw,eves,1,tmin=-0.3,tmax=5.5, reject = reject, baseline = (-0.1,0.))
     epochs.append(ep_cnd)
     evkd.append(ep_cnd.average())

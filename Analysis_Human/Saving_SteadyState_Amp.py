@@ -20,22 +20,40 @@ warnings.simplefilter('ignore')
 plt.rcParams["figure.figsize"] = (5.5,5)
 plt.rcParams['figure.dpi'] = 120
 #%%Setting up stuff
-save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
-epochs_loc = 'D:/PhD/Data/Epochs-fif/'
+save_fig = ''
 save_mat_loc = 'D:/PhD/Data/Binding_matfiles/0.4-40Hz/'
 
-subjlist = ['S268', 'S274', 'S282', 'S285',
-            'S277', 'S279', 'S280', 'S259', 'S270', 
-            'S271', 'S281', 'S290', 'S284', 'S305',
-            'S303', 'S288', 'S260', 'S352', 'S341',
-            'S312', 'S347', 'S340', 'S078', 'S342', 'S072', 'S105', 
-            'S291', 'S310', 'S339', 'S355',  
-            'S272', 'S069', 'S088', 'S309', 'S345']
+# subjlist = ['S104']
 
-subjlist = ['S069', 'S072', 'S']
+subjlist = ['S069', 'S072', 'S078', 'S088',
+            'S105', 'S259', 'S260', 'S268', 'S269',
+            'S270', 'S271', 'S272', 'S274',
+            'S277', 'S279', 'S280', 'S281', 'S282',
+            'S284', 'S285', 'S288', 'S290', 'S291',
+            'S303', 'S305', 'S308', 'S309', 'S310',
+            'S312', 'S337', 'S339', 'S340', 'S341', 
+            'S342', 'S344', 'S345', 'S347', 'S352', 
+            'S355', 'S358']
 
-### Need 'S246','S104', 'S345',
-#Removed --  'S273'
+subjlist = ['S069', 'S072', 'S078', 'S088',
+            'S105', 'S259', 'S260', 'S268', 'S269',
+            'S270', 'S271', 'S272', 'S274',
+            'S277', 'S279', 'S280', 'S281', 'S282',
+            'S284', 'S285', 'S288', 'S290', 'S291',
+            'S303', 'S305', 'S308', 'S309', 'S310',
+            'S312', 'S337', 'S339', 'S340', 'S341', 
+            'S342', 'S344', 'S347', 'S352', 
+            'S355', 'S358']
+
+#Uncommon == 'S105', 'S272', 'S309', 'S337', 'S345','S355', 'S358'
+
+#Removed --  'S273'-- Looks like equal amount of positive and negative components for GFP ; 
+#            'S104' -- NAN
+#           'S358' -- Last incoherent period weird 
+
+
+#'S345' also weird? -- Extremely high activity at last incoherent period -- 400 ms 
+#S309, S337, S358 -- Really weird data 
 #%% Loading all subjects' data 
 
 # 0 - 12 Onset (Upto 1.1 s) -- 0
@@ -92,18 +110,14 @@ for subj in range(len(subjlist)):
     gfps5[subj,:] = evkd5[0:31].std(axis=0) 
     gfps6[subj,:] = evkd6[0:31].std(axis=0) 
     gfps7[subj,:] = evkd7[0:31].std(axis=0) 
-    evkds0[subj,:] = evkd0[0:31].mean(axis=0)       #Taking the mean of only 32 channels (excluding the EXGs)
-    evkds1[subj,:] = evkd1[0:31].mean(axis=0)
-    evkds2[subj,:] = evkd2[0:31].mean(axis=0)
-    evkds3[subj,:] = evkd3[0:31].mean(axis=0)
-    evkds4[subj,:] = evkd4[0:31].mean(axis=0)
-    evkds5[subj,:] = evkd5[0:31].mean(axis=0)
-    evkds6[subj,:] = evkd6[0:31].mean(axis=0)
-    evkds7[subj,:] = evkd7[0:31].mean(axis=0)
-
-#%% Loading S337's data -- as it is without the EXGs, so the chans saved are only 32 
-
-
+    evkds0[subj,:] = evkd0[31]       #Taking the mean of only 32 channels (excluding the EXGs)
+    evkds1[subj,:] = evkd1[31]
+    evkds2[subj,:] = evkd2[31]
+    evkds3[subj,:] = evkd3[31]
+    evkds4[subj,:] = evkd4[31]
+    evkds5[subj,:] = evkd5[31]
+    evkds6[subj,:] = evkd6[31]
+    evkds7[subj,:] = evkd7[31]
 
 #%% Plotting and saving of 32 channel GFP across all subjects -- Baselined for 1 sec interval for coh and incoherent periods
 
@@ -120,7 +134,7 @@ ax[0].set_title('Onset')
 ax[1].title.set_text('Incoherent to Coherent')
 ax[2].title.set_text('Coherent to Incoherent')
 ax[0].legend()
-fig.tight_layout()
+# fig.tight_layout()
 fig.text(0, 0.55,'Global Field Power(\u03bcV)',fontsize=14, va='center', rotation='vertical')
 plt.xlabel('Time(s)',fontsize=14)
 plt.rcParams["figure.figsize"] = (6.5,5)
@@ -138,18 +152,173 @@ gfp12_incoh = gfps4[:,t3]
 gfp20_coh = gfps3[:,t3]
 gfp20_incoh = gfps5[:,t3]
 
-gfp12 = gfp12_coh - gfp12_incoh         #Calculating coherent - incoherent (kinda baselining)
-gfp20 = gfp20_coh - gfp20_incoh
+gfp12 = (gfp12_coh - gfp12_incoh).mean(axis=1)         #Calculating coherent - incoherent (kinda baselining)
+gfp20 = (gfp20_coh - gfp20_incoh).mean(axis=1)
 
-mat_id = dict(subj=subj,gfp12 = gfp12, gfp20=gfp20,gfp12_coh=gfp12_coh,gfp12_incoh=gfp12_incoh,
+plt.bar(('12','20'), (gfp12.mean(), gfp20.mean()))
+plt.show()
+
+mat_id = dict(sub=subjlist,gfp12 = gfp12, gfp20=gfp20,gfp12_coh=gfp12_coh,gfp12_incoh=gfp12_incoh,
               gfp20_coh=gfp20_coh,gfp20_incoh=gfp20_incoh)
 
-savemat(save_mat_loc + 'AllSubj_GFPDiff.mat', mat_id)
+savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_1sec(N=39).mat', mat_id)
 
-#%% Calculation and saving of 32 channel DC shift in GFP across all subjects -- Baselined for 1 sec interval for coh and incoherent periods
+#%% Calculation and saving of 32 channel DC shift in GFP across all subjects -- For entire 5 second duration
 
+plt.errorbar(t_full, gfps6.mean(axis=0), yerr=sem(gfps6), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
+plt.errorbar(t_full, gfps7.mean(axis=0), yerr=sem(gfps7), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
+plt.suptitle('Binding - GFP (N='+ str(len(subjlist)) +')')
+plt.subplots_adjust(top=0.88)
+plt.legend()
+# fig.tight_layout()
+plt.ylabel('Global Field Power(\u03bcV)')
+plt.xlabel('Time(s)',fontsize=14)
+plt.rcParams["figure.figsize"] = (6.5,5)
+plt.xticks(fontsize=14)
+plt.show()
 
+### Calculating DC shift from 300-800 ms (GFP)
+t1 = t_full>=0.3
+t2 = t_full<=0.8
+t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
+t4 = t_full>=1.3
+t5 = t_full<=1.8
+t6 = (np.array([t4[i] and t5[i] for i in range(len(t4))]))
+t7 = t_full>=2.3
+t8 = t_full<=2.8
+t9 = np.array([t7[i] and t8[i] for i in range(len(t7))])
+t10 = t_full>=3.3
+t11 = t_full<=3.8
+t12 = np.array([t10[i] and t11[i] for i in range(len(t10))])
+t13 = t_full>=4.3
+t14 = t_full<=4.8
+t15 = np.array([t13[i] and t14[i] for i in range(len(t13))])
 
+gfp12_1=gfps6[:,t3]
+gfp12_2=gfps6[:,t6]
+gfp12_3=gfps6[:,t9]
+gfp12_4=gfps6[:,t12]
+gfp12_5=gfps6[:,t15]
 
+gfp20_1=gfps7[:,t3]
+gfp20_2=gfps7[:,t6]
+gfp20_3=gfps7[:,t9]
+gfp20_4=gfps7[:,t12]
+gfp20_5=gfps7[:,t15]
 
-#%% Calculating only A32 channel amp DC shift for 300-800 ms for all subjects 
+gfp12_coh = gfp12_2 + gfp12_4
+gfp12_incoh =  gfp12_3 + gfp12_5
+gfps12_5sec=(gfp12_coh-gfp12_incoh).mean(axis=1)
+
+gfp20_coh = gfp20_2 + gfp20_4
+gfp20_incoh =  gfp20_3 + gfp20_5
+gfps20_5sec=(gfp20_coh-gfp20_incoh).mean(axis=1)
+
+plt.bar(('12','20'), (gfps12_5sec.mean(), gfps20_5sec.mean()))
+plt.show()
+
+mat_ids1=dict(subj=subjlist,gfps12_5sec=gfps12_5sec, gfps20_5sec=gfps20_5sec)
+
+savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_5sec(N=39)_New.mat', mat_ids1)
+
+#%% Plotting and calculating only A32 channel amp DC shift for 300-800 ms for all subjects 
+fig, ax = plt.subplots(3, 1, sharex = True, constrained_layout=True)
+ax[0].errorbar(t, evkds0.mean(axis=0), yerr=sem(evkds0), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
+ax[0].errorbar(t, evkds1.mean(axis=0), yerr=sem(evkds1), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
+ax[1].errorbar(t, evkds2.mean(axis=0), yerr=sem(evkds2), color='green', linewidth=2, ecolor='darkseagreen')
+ax[1].errorbar(t, evkds3.mean(axis=0), yerr=sem(evkds3), color='purple', linewidth=2, ecolor='thistle')
+ax[2].errorbar(t, evkds4.mean(axis=0), yerr=sem(evkds4), color='green', linewidth=2, ecolor='darkseagreen')
+ax[2].errorbar(t, evkds5.mean(axis=0), yerr=sem(evkds5), color='purple', linewidth=2, ecolor='thistle')
+plt.suptitle('Binding A32 - Amplitude (N='+ str(len(subjlist)) +')')
+fig.subplots_adjust(top=0.88)
+ax[0].set_title('Onset')
+ax[1].title.set_text('Incoherent to Coherent')
+ax[2].title.set_text('Coherent to Incoherent')
+ax[0].legend()
+# fig.tight_layout()
+fig.text(0, 0.55,'Amplitude (\u03bcV)',fontsize=14, va='center', rotation='vertical')
+plt.xlabel('Time(s)',fontsize=14)
+plt.rcParams["figure.figsize"] = (6.5,5)
+plt.xticks(fontsize=14)
+plt.show()
+
+### Calculating DC shift from 300-800 ms (Amplitude) -- Baselined -- 1 second
+
+t1 = t>=0.3
+t2 = t<=0.8
+t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
+
+evoked12_coh = evkds2[:,t3]
+evoked12_incoh = evkds4[:,t3]
+evoked20_coh = evkds3[:,t3]
+evoked20_incoh = evkds5[:,t3]
+
+evoked12 = (evoked12_coh - evoked12_incoh).mean(axis=1)     #Calculating coherent - incoherent (kinda baselining)
+evoked20 = (evoked20_coh - evoked20_incoh).mean(axis=1)
+
+plt.bar(('12','20'), (evoked12.mean(), evoked20.mean()))
+plt.show()
+
+mat_id = dict(sub=subjlist,evoked12 = evoked12, evoked20=evoked20,evoked12_coh=evoked12_coh,evoked12_incoh=evoked12_incoh,
+              evoked20_coh=evoked20_coh,evoked20_incoh=evoked20_incoh)
+
+savemat(save_mat_loc + 'AllSubj_EvokedDiff_0.4-40Hz_1sec(N=39).mat', mat_id)
+
+#%% Plotting and calculating only A32 channel amp DC shift for 300-800 ms for all subjects - Without baseline
+
+plt.errorbar(t_full, evkds6.mean(axis=0), yerr=sem(evkds6), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
+plt.errorbar(t_full, evkds7.mean(axis=0), yerr=sem(evkds7), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
+plt.suptitle('Binding (A32) - Amplitude (N='+ str(len(subjlist)) +')')
+plt.subplots_adjust(top=0.88)
+plt.legend()
+# fig.tight_layout()
+plt.ylabel('Amplitude (\u03bcV)')
+plt.xlabel('Time(s)',fontsize=14)
+plt.rcParams["figure.figsize"] = (6.5,5)
+plt.xticks(fontsize=14)
+plt.show()
+
+### Calculating DC shift from 300-800 ms (Amplitude for A32 only) -- 5 seconds duration
+t1 = t_full>=0.3
+t2 = t_full<=0.8
+t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
+t4 = t_full>=1.3
+t5 = t_full<=1.8
+t6 = (np.array([t4[i] and t5[i] for i in range(len(t4))]))
+t7 = t_full>=2.3
+t8 = t_full<=2.8
+t9 = np.array([t7[i] and t8[i] for i in range(len(t7))])
+t10 = t_full>=3.3
+t11 = t_full<=3.8
+t12 = np.array([t10[i] and t11[i] for i in range(len(t10))])
+t13 = t_full>=4.3
+t14 = t_full<=4.8
+t15 = np.array([t13[i] and t14[i] for i in range(len(t13))])
+ 
+evoked12_1=evkds6[:,t3]
+evoked12_2=evkds6[:,t6]
+evoked12_3=evkds6[:,t9]
+evoked12_4=evkds6[:,t12]
+evoked12_5=evkds6[:,t15]
+
+evoked20_1=evkds7[:,t3]
+evoked20_2=evkds7[:,t6]
+evoked20_3=evkds7[:,t9]
+evoked20_4=evkds7[:,t12]
+evoked20_5=evkds7[:,t15]
+
+evoked12_coh = evoked12_2 + evoked12_4
+evoked12_incoh =  evoked12_3 + evoked12_5
+evokeds12_5sec=(evoked12_coh-evoked12_incoh).mean(axis=1)
+
+evoked20_coh = evoked20_2 + evoked20_4
+evoked20_incoh =  evoked20_3 + evoked20_5
+evokeds20_5sec=(evoked20_coh-evoked20_incoh).mean(axis=1)
+
+plt.bar(('12','20'), (evokeds12_5sec.mean(), evokeds20_5sec.mean()))
+plt.show()
+
+mat_ids1=dict(subj=subjlist,evokeds12_5sec=evokeds12_5sec, evokeds20_5sec=evokeds20_5sec)
+
+savemat(save_mat_loc + 'AllSubj_A32_EvokedDiff_0.4-40Hz_5sec(N=39).mat', mat_ids1)
+
