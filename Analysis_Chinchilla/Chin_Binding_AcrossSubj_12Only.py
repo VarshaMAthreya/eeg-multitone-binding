@@ -19,7 +19,6 @@ pickle_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/
 
 save_loc =  'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/Figures/'
 
-
 Subjects = ['Q414', 'Q416', 'Q418']
 
 A_epochs = []
