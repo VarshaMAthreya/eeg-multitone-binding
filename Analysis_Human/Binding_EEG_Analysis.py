@@ -61,7 +61,7 @@ for subj in subjlist:
         rawlist += [rawtemp, ]
         evelist += [evestemp, ]
     raw, eves = mne.concatenate_raws(rawlist, events_list=evelist)
-    # raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6), event_color={1: 'r', 2: 'g'})    # To check and mark bad channels
+    raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6))    # To check and mark bad channels
 
 #%% Reject a few of the electrodes for each subject
   
@@ -100,6 +100,7 @@ for subj in subjlist:
        raw.info['bads'].append('A1')
        raw.info['bads'].append('A30')
        raw.info['bads'].append('A24')
+       raw.info['bads'].append('A25')
     
     if subj == 'S281':
        raw.info['bads'].append('A29')
@@ -184,6 +185,11 @@ for subj in subjlist:
        raw.info['bads'].append('A11') 
        raw.info['bads'].append('A24') 
        
+    if subj == 'S207':
+        raw.info['bads'].append('A7') 
+        raw.info['bads'].append('A3') 
+        raw.info['bads'].append('A15') 
+     
 #%% Filtering for cortical responses 
 
     raw.filter(1, 40.)
@@ -286,6 +292,7 @@ for subj in subjlist:
 #     #mne.viz.plot_compare_evokeds(evkds,title=comp_labels[it]
 #%% Make Plots outside of MNE
     picks=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+    picks = [4, 7, 22, 25, 30, 31]
     combos_comp = [[0,1], [10,12], [11,13]]
     comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
     
@@ -359,17 +366,18 @@ for subj in subjlist:
     save_indexes = [0,1,10,11,12,13,14,15]      # 0 - 12 Onset (Upto 1.1 s)
                                                 # 1 - 20 Onset (Upto 1.1 s)
                                                 # 10 - 12 Incoherent to Coherent
-                                                # 11 - 20 Incoherent to Coherent
-                                                # 12 - 12 Coherent to Incoherent 
+                                                # 11 - 12 Coherent to Incoherent
+                                                # 12 - 20 Incoherent to Coherent 
                                                 # 13 - 20 Coherent to Incoherent 
                                                 # 14 - 12 Full 5 seconds
                                                 # 15 - 20 Full 5 seconds 
     conds_save = []
     epochs_save = []
-    evkd_save = [] #save 32 channel evkd response
+    evkd_save = [] 
     t = t 
     t_full = epochs[-1].times
-
+    picks = [4, 7, 22, 25, 30, 31]
+    
     for si in save_indexes:
           conds_save.append(conds[si])
           evkd_save.append(evkd[si])
