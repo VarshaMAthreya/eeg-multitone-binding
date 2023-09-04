@@ -28,10 +28,11 @@ fig_loc = 'C:/Users/vmysorea/Desktop/PhD/GreenLightMeeting/Figures/'
 save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 data_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/'
 
-subjlist = ['S104']
+# subjlist = ['S104']
 subjlist = ['S273', 'S069', 'S072', 'S078', 'S088', 
-            'S104', 'S260', 'S268', 'S269', 'S270', 
-            'S271', 'S272', 'S274', 'S277', 'S279', 
+            'S105', 'S207', 'S259', 'S260', 'S268', 
+            'S269', 'S270', 'S271', 'S272', 'S274', 
+            'S277', 'S279', 
             'S280', 'S281', 'S282', 'S284', 'S285', 
             'S288', 'S290', 'S291', 'S303', 'S305', 
             'S308', 'S309', 'S310', 'S312', 'S337', 
@@ -39,12 +40,12 @@ subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
             'S345', 'S347', 'S352', 'S355', 'S358']
 
 
-# for subj in range(len(subjlist)):
-#     sub = subjlist [subj]
-#     dat1 = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
-#     dat1.keys()
-#     t = dat1['t']
-#     t_full = dat1['t_full']
+for subj in range(len(subjlist)):
+    sub = subjlist [subj]
+    dat1 = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+    dat1.keys()
+    t = dat1['t']
+    t_full = dat1['t_full']
 
 #Load data with subjects' age and gender and pick subj only from subjlist 
 dat = pd.read_csv(data_loc + 'subj_age_gender.csv')
@@ -129,6 +130,7 @@ for age, groups in age_groups:
     evkds6_all.append(group_evkds6)
     evkds7_all.append(group_evkds7)
    
+
 #%%
 conditions = {
     0: evkds0_all,
@@ -137,7 +139,8 @@ conditions = {
     3: evkds3_all,
     4: evkds4_all,
     5: evkds5_all,
-}
+    6: evkds6_all,
+    7: evkds7_all}
 
 mean_data = {}
 sem_data = {}
@@ -155,82 +158,19 @@ for condition, evkds_all in conditions.items():
     
     mean_data[condition] = mean_age_group
     sem_data[condition] = sem_age_group
-
-#%% Plot each condition in separate plots 
-# Define condition names
-condition_names = { 0: '12 Onset',
-                    1: '20 Onset',
-                    2: '12 Incoherent to Coherent',
-                    3: '12 Coherent to Incoherent', 
-                    4: '20 Incoherent to Coherent',
-                    5: '20 Coherent to Incoherent',
-                    }
-
-age_group_labels = {'MNH': 'Middle (36-55 y)',
-                    'ONH': 'Old (>=56 y)',
-                    'YNH': 'Young (<=35 y)'}
-
-# Iterate through conditions
-for condition, evkds_all in conditions.items():
-    plt.figure()  # Create a new plot for each condition
-    plt.title(condition_names.get(condition, f'Condition {condition}'))
-    
-    # Iterate through age groups
-    for age_group, (mean_age_group, sem_age_group) in enumerate(zip(mean_data[condition], sem_data[condition])):
-        age_label = list(age_group_labels.keys())[age_group]  # Get age group label based on index
-        age_label_text = age_group_labels.get(age_label, age_label)  # Get label text or fallback to key
-        
-        # Plot mean with SEM as shaded region
-        plt.plot(t, mean_age_group, label=f'{age_label_text} Age Group')
-        plt.fill_between(t, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
-    
-    plt.xlabel('Time')
-    plt.ylabel('Mean')
-    plt.legend()
-    plt.grid()
-    plt.show()  # Show the plot for this condition
-
-#%% Plot full 5 seconds 
-conditions_full = {6: evkds6_all,
-              7: evkds7_all}
-condition_names_full = { 6: '12 Full 5 seconds',
-                    7: '20 Full 5 seconds'}
-
-age_group_labels = {'MNH': 'Middle (36-55 y)',
-                    'ONH': 'Old (>=56 y)',
-                    'YNH': 'Young (<=35 y)'}
-
-# Iterate through conditions
-for condition, evkds_all in conditions_full.items():
-    plt.figure()  # Create a new plot for each condition
-    plt.title(condition_names_full.get(condition, f'Condition {condition}'))
-    
-    # Iterate through age groups
-    for age_group, (mean_age_group, sem_age_group) in enumerate(zip(mean_data[condition], sem_data[condition])):
-        age_label = list(age_group_labels.keys())[age_group]  # Get age group label based on index
-        age_label_text = age_group_labels.get(age_label, age_label)  # Get label text or fallback to key
-        
-        # Plot mean with SEM as shaded region
-        plt.plot(t_full, mean_age_group, label=f'{age_label_text} Age Group')
-        plt.fill_between(t_full, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
-    
-    plt.xlabel('Time')
-    plt.ylabel('Mean')
-    plt.legend()
-    plt.grid()
-    plt.show()  # Show the plot for this condition
     
 #%% Subplots!
 
 # Define condition names
 condition_names = { 0: '12 Onset',
-                    1: '20 Onset',
-                    2: '12 Incoherent to Coherent',
-                    3: '12 Coherent to Incoherent', 
-                    4: '20 Incoherent to Coherent',
-                    5: '20 Coherent to Incoherent',
-                    }
-
+                     1: '20 Onset',
+                     2: '12 Incoherent to Coherent',
+                     3: '12 Coherent to Incoherent', 
+                     4: '20 Incoherent to Coherent',
+                     5: '20 Coherent to Incoherent',
+                     6: '12 Tone', 7: '20 Tone'}
+                                   
+                    
 # Define age group labels
 age_group_labels = {'YNH': 'Young (<=35 y)',
                     'MNH': 'Middle (36-55 y)',
@@ -238,9 +178,11 @@ age_group_labels = {'YNH': 'Young (<=35 y)',
 
 cond_groups = [(0,1), (2,4), (3,5)]
 
+# cond_groups = [(6,7)]
+
 # Create a figure with 3 horizontal subplots
 for cond in cond_groups:  
-    fig, axs = plt.subplots(3, 1, figsize=(10, 9), sharex= True)
+    fig, axs = plt.subplots(3, 1, figsize=(4.5,4), sharex= True)
 
 # Iterate through age groups
     for age_group_index, age_group in enumerate(age_group_labels.keys()):
@@ -262,7 +204,7 @@ for cond in cond_groups:
             ax.fill_between(t, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
                 
         if age_group_index == 0:
-            ax.legend()
+            ax.legend(loc ='upper right',fontsize = 'xx-small' )
         
         # ax.set_ylabel()
         # ax.set_ylim(-2,5.2)
@@ -273,7 +215,57 @@ for cond in cond_groups:
         plt.xlabel('Time (s)', fontsize =12)
         # fig.suptitle(f'{condition_name}', size=16, y=1.001)
     
-        plt.tight_layout()
-        plt.show()  # Show the plot
+    plt.tight_layout()
+    plt.savefig(fig_loc + f'cond_{cond[0]}_{cond[1]}_1.png', dpi = 500)
+    # plt.close()
+        # plt.show()  # Show the plot
 
-plt.savefig(fig_loc + 'Onset12vs20_AcrossAge.png', dpi=500)
+# plt.savefig(fig_loc + 'Onset12vs20_AcrossAge.png', dpi=500)
+
+#%%## all three age groups in same subplot
+
+condition_names = { 0: '12 Onset',
+                     1: '20 Onset',
+                     2: '12 Incoherent to Coherent',
+                     3: '12 Coherent to Incoherent', 
+                     4: '20 Incoherent to Coherent',
+                     5: '20 Coherent to Incoherent',
+                     6: '12 Tone', 
+                     7: '20 Tone'}
+
+# Define age group labels
+age_group_labels = {'YNH': 'Young (<36)', 'MNH': 'Middle (36-55)', 'ONH': 'Old (>55)'}
+
+# Create a figure with 3 subplots
+
+fig, axs = plt.subplots(3, 1, figsize=(6.5, 5), sharex=True, constrained_layout=True)
+
+# Loop through conditions and plot in subplots
+for condition_index, condition in enumerate([1, 4, 5]):
+    ax = axs[condition_index]
+    ax.set_title(condition_names[condition])
+    
+    # Iterate through age groups
+    for age_group_index, age_group in enumerate(age_group_labels.keys()):
+        mean_age_group = mean_data[condition][age_group_index]
+        sem_age_group = sem_data[condition][age_group_index]
+        
+        # Plot mean with SEM as shaded region
+        ax.plot(t, mean_age_group, label=age_group, alpha=0.7)
+        ax.fill_between(t, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
+        
+    if condition_index == 0:
+        ax.legend(loc ='upper right')
+    
+    ax.set_xlim(-0.1,1.1)
+    ax.grid()
+    
+plt.subplots_adjust(wspace=0.15,hspace =0.15)    
+plt.xlabel('Time (s)', fontsize =12)
+fig.text(0, 0.5, 'Amplitude (\u03bcV)', va='center', rotation='vertical', fontsize=12)
+plt.tight_layout()
+plt.show()
+
+plt.savefig(fig_loc + 'Binding20_AcrossAges.png', dpi = 500)
+
+

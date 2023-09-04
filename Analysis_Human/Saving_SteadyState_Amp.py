@@ -114,7 +114,7 @@ for subj in range(len(subjlist)):
     gfps5[subj,:] = evkd5[0:31].std(axis=0) 
     gfps6[subj,:] = evkd6[0:31].std(axis=0) 
     gfps7[subj,:] = evkd7[0:31].std(axis=0) 
-    evkds0[subj,:] = evkd0.mean(axis=0)       #Taking the mean of only 32 channels (excluding the EXGs)
+    evkds0[subj,:] = evkd0.mean(axis=0)       #Taking the mean of 4 channels (excluding the EXGs)
     evkds1[subj,:] = evkd1.mean(axis=0)
     evkds2[subj,:] = evkd2.mean(axis=0)
     evkds3[subj,:] = evkd3.mean(axis=0)
