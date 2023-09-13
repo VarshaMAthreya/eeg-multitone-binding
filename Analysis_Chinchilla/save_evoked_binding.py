@@ -32,7 +32,7 @@ plt.rcParams['figure.dpi'] = 120
 froot = 'F:/PhD/Data/Chin_Data/Anesthetized/'  # file location
 save_loc='F:/PhD/Data/Chin_Data/AnalyzedBinding_matfiles/'
 
-subjlist = ['Q414']  # Load subject folder
+subjlist = ['Q417']  # Load subject folder
 condlist = [1] 
 condnames = ['12']
 
@@ -59,6 +59,7 @@ for subj in subjlist:
     raw.info['bads'].append('EXG6') 
     raw.info['bads'].append('EXG7')
     raw.info['bads'].append('EXG8')
+    raw.info['bads'].append('A27') 
     
     # if subj == 'Q414_1':
     #     raw.set_channel_types({'EXG2':'eeg'})           #Mastoid - 35
@@ -68,10 +69,16 @@ for subj in subjlist:
     #raw.set_eeg_reference(ref_channels='average')
 
     # To check and mark bad channels
-    raw.plot(duration=25.0, n_channels=41, scalings=dict(eeg=200e-6))
+    # raw.plot(duration=25.0, n_channels=41, scalings=dict(eeg=200e-6))
+
+#%% Marking bad chans
+    if subj == 'Q417':
+        raw.info['bads'].append('A1')
+        raw.info['bads'].append('A12')
+        raw.info['bads'].append('A26')
     
 #%% Filtering 
-    raw.filter(1., 20.)
+    raw.filter(1., 30.)
     raw.info
     
 #%% Plotting Onset responses
