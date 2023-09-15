@@ -24,7 +24,7 @@ plt.rc('xtick', labelsize=11)
 plt.rc('ytick', labelsize=11) 
 
 #%%Setting up stuff
-fig_loc = 'C:/Users/vmysorea/Desktop/PhD/GreenLightMeeting/Figures/'
+fig_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/GreenLight/'
 save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 data_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/'
 
@@ -53,13 +53,20 @@ dat0 = dat['Subject'].isin(subjlist)
 dat = dat[dat0]
 
 #Categorizing into different age groups 
-def group_age (age):
-    if age <= 35:
+# def group_age (age):
+#     if age <= 35:
+#         return 'YNH'
+#     elif age <=55:
+#         return 'MNH'
+#     else: 
+#         return 'ONH'
+    
+def group_age(age):
+    if age <= 40:
         return 'YNH'
-    elif age <=55:
-        return 'MNH'
-    else: 
+    else:
         return 'ONH'
+
     
 dat['age_group'] = dat['Age'].apply([group_age])
 age_groups = dat.groupby(['age_group'], sort=False)
@@ -172,9 +179,12 @@ condition_names = { 0: '12 Onset',
                                    
                     
 # Define age group labels
-age_group_labels = {'YNH': 'Young (<=35 y)',
-                    'MNH': 'Middle (36-55 y)',
-                    'ONH': 'Old (>=56 y)'}
+# age_group_labels = {'YNH': 'Young (<=35 y)',
+#                     'MNH': 'Middle (36-55 y)',
+#                     'ONH': 'Old (>=56 y)'}
+
+age_group_labels = {'YNH': 'Young (<=40 y)',
+                    'ONH': 'Old (>41 y)'}
 
 cond_groups = [(0,1), (2,4), (3,5)]
 
@@ -234,7 +244,10 @@ condition_names = { 0: '12 Onset',
                      7: '20 Tone'}
 
 # Define age group labels
-age_group_labels = {'YNH': 'Young (<36)', 'MNH': 'Middle (36-55)', 'ONH': 'Old (>55)'}
+# age_group_labels = {'YNH': 'Young (<36)', 'MNH': 'Middle (36-55)', 'ONH': 'Old (>55)'}
+
+age_group_labels = {'YNH': 'Young (<=40 y)',
+                    'ONH': 'Old (>41 y)'}
 
 # Create a figure with 3 subplots
 
@@ -245,18 +258,25 @@ for condition_index, condition in enumerate([1, 4, 5]):
     ax = axs[condition_index]
     ax.set_title(condition_names[condition])
     
+    legend_text=[]
+    
     # Iterate through age groups
     for age_group_index, age_group in enumerate(age_group_labels.keys()):
         mean_age_group = mean_data[condition][age_group_index]
         sem_age_group = sem_data[condition][age_group_index]
         
+        N = age_groups['age_group'].count()[age_group]
+        
         # Plot mean with SEM as shaded region
-        ax.plot(t, mean_age_group, label=age_group, alpha=0.7)
+        ax.plot(t, mean_age_group, label=age_group, alpha=0.9)
         ax.fill_between(t, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
         
+        legend_text.append(f"{age_group} (N={N})")
+        
     if condition_index == 0:
-        ax.legend(loc ='upper right')
+        ax.legend(labels=legend_text, loc='upper right', fontsize='xx-small')
     
+    # ax.set_ylim(-2,5.1)
     ax.set_xlim(-0.1,1.1)
     ax.grid()
     
