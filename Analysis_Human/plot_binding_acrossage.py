@@ -43,7 +43,7 @@ subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
 
 for subj in range(len(subjlist)):
     sub = subjlist [subj]
-    dat1 = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+    dat1 = io.loadmat(save_mat_loc + sub + '_0.4-40Hz_Evoked_AllChan.mat', squeeze_me=True)
     dat1.keys()
     t = dat1['t']
     t_full = dat1['t_full']
@@ -92,9 +92,16 @@ evkds4_all = []
 evkds5_all = []
 evkds6_all = []
 evkds7_all = []
+ss_all12 =[]
+ss_all20 =[]
+gfp_all12 = []
+gfp_all20 = []
 
 mat_agegroups = []
 picks = [4, 25, 30, 31]         #Took off the Cs
+
+picks_ss = [3, 30, 26, 4, 25, 7, 31, 22, 8, 21, 11, 12, 18]
+
 
 for age, groups in age_groups:
     group_evkds0 = []  # Initialize lists for each condition and age group
@@ -105,10 +112,14 @@ for age, groups in age_groups:
     group_evkds5 = []
     group_evkds6 = []
     group_evkds7 = []
+    group_ss12 =[]
+    group_ss20 =[]
+    group_gfp12 =[]
+    group_gfp20 = []
     
     for index, column in groups.iterrows():
         subj = column['Subject']
-        dat = io.loadmat(save_mat_loc + subj + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+        dat = io.loadmat(save_mat_loc + subj + '_0.4-40Hz_Evoked_AllChan.mat', squeeze_me=True)
         dat.keys()
         evkd0 = dat['evkd0'][picks]
         evkd1 = dat['evkd1'][picks]
@@ -118,6 +129,14 @@ for age, groups in age_groups:
         evkd5 = dat['evkd5'][picks]
         evkd6 = dat['evkd6'][picks]
         evkd7 = dat['evkd7'][picks]
+        
+        ss6 = dat['evkd6'][picks_ss]      ###Doing this only for the 5 sec plot 
+        ss7 = dat['evkd7'][picks_ss]
+        ss12 = ((ss6**2).sum(axis=0))
+        ss20 = ((ss7**2).sum(axis=0))
+        
+        gfp12 = ss6.std(axis=0)
+        gfp20 = ss7.std(axis=0)
 
         group_evkds0.append(evkd0.mean(axis=0))
         group_evkds1.append(evkd1.mean(axis=0))
@@ -127,7 +146,13 @@ for age, groups in age_groups:
         group_evkds5.append(evkd5.mean(axis=0))
         group_evkds6.append(evkd6.mean(axis=0))
         group_evkds7.append(evkd7.mean(axis=0))
-
+        
+        group_ss12.append(ss12)
+        group_ss20.append(ss20)
+        
+        group_gfp12.append(gfp12)
+        group_gfp20.append(gfp20)
+        
     # Append data for each age group to lists
     evkds0_all.append(group_evkds0)
     evkds1_all.append(group_evkds1)
@@ -137,7 +162,12 @@ for age, groups in age_groups:
     evkds5_all.append(group_evkds5)
     evkds6_all.append(group_evkds6)
     evkds7_all.append(group_evkds7)
-   
+    
+    ss_all12.append(group_ss12)
+    ss_all20.append(group_ss20)
+    
+    gfp_all12.append(group_gfp12)
+    gfp_all20.append(group_gfp20)
 
 #%%
 conditions = {
@@ -148,7 +178,11 @@ conditions = {
     4: evkds4_all,
     5: evkds5_all,
     6: evkds6_all,
-    7: evkds7_all}
+    7: evkds7_all, 
+    8: ss_all12,
+    9: ss_all20, 
+    10: gfp_all12,
+    11: gfp_all20}
 
 mean_data = {}
 sem_data = {}
@@ -178,7 +212,11 @@ condition_names = { 0: '12 Onset',
                      3: '12 Coherent to Incoherent', 
                      4: '20 Incoherent to Coherent',
                      5: '20 Coherent to Incoherent',
-                     6: '12 Tone', 7: '20 Tone'}
+                     6: '12 Tone', 7: '20 Tone', 
+                     8: '12 Tone Sum of Squares', 
+                     9: '20 Tone Sum of Squares',
+                     10: '12 Tone | GFP', 
+                     11: '20 | GFP'}
                                    
                     
 # Define age group labels
@@ -189,7 +227,7 @@ condition_names = { 0: '12 Onset',
 age_group_labels = {'YNH': 'Young (<=40 y)',
                     'ONH': 'Old (>41 y)'}
 
-cond_groups = [(0,1), (2,4), (3,5)]
+cond_groups = [(6,7)]
 
 # cond_groups = [(6,7)]
 
@@ -231,7 +269,7 @@ for cond in cond_groups:
     plt.tight_layout()
     # plt.savefig(fig_loc + f'cond_{cond[0]}_{cond[1]}_1.png', dpi = 500)
     # plt.close()
-        # plt.show()  # Show the plot
+    plt.show()  
 
 # plt.savefig(fig_loc + 'Onset12vs20_AcrossAge.png', dpi=500)
 
@@ -244,7 +282,11 @@ condition_names = { 0: '12 Onset',
                      4: '20 Incoherent to Coherent',
                      5: '20 Coherent to Incoherent',
                      6: '12 Tone', 
-                     7: '20 Tone'}
+                     7: '20 Tone',
+                     8: '12 Tone Sum of Squares', 
+                     9: '20 Tone Sum of Squares',
+                     10: '12 Tone | GFP', 
+                     11: '20 | GFP'}
 
 # Define age group labels
 # age_group_labels = {'YNH': 'Young (<36)', 'MNH': 'Middle (36-55)', 'ONH': 'Old (>55)'}
@@ -304,7 +346,11 @@ condition_names = { 0: '12 Onset',
                      4: '20 Incoherent to Coherent',
                      5: '20 Coherent to Incoherent',
                      6: '12 Tone', 
-                     7: '20 Tone | Picks - Cz, Fz, FC1, FC2'}
+                     7: '20 Tone | Picks - Cz, Fz, FC1, FC2', 
+                     8: '12 Tone | Sum of Squares', 
+                     9: '20 Tone | Sum of Squares',
+                     10: '12 Tone | GFP', 
+                     11: '20 Tone | GFP'}
 
 # Define age group labels
 # age_group_labels = {'YNH': 'Young (<36)', 'MNH': 'Middle (36-55)', 'ONH': 'Old (>55)'}
@@ -316,7 +362,7 @@ age_group_labels = {'YNH': 'Young (<=40 y)',
 
 fig, ax = plt.subplots(figsize=(8, 4), constrained_layout=True)
 
-condition_to_plot = 7
+condition_to_plot = 9
 
 # Plot the selected condition in the subplot
 ax.set_title(condition_names[condition_to_plot])
@@ -338,7 +384,7 @@ for age_group_index, age_group in enumerate(age_group_labels.keys()):
 
 ax.legend(labels=legend_text, loc='upper right', fontsize='xx-small')
 
-ax.set_ylim(-1, 5.1)
+ax.set_ylim(0, 3.1e-4)
 ax.set_xlim(-0.2, 5.5)
 # ax.grid()
 
@@ -349,20 +395,21 @@ y_limits = ax.get_ylim()
 
 labels = ["Stim On", "Stim Off"]
 for x, label in zip([0,5], labels):
-    ax.text(x, y_limits[1] + 0.1, label, ha='center',weight='bold')
+    ax.text(x, y_limits[1] + 0.05e-4, label, ha='center',weight='bold')
     
 coh_labels = ["Incoherent", "Coherent", "Incoherent", "Coherent","Incoherent"]
 for x, label in zip([0.55,1.4,2.4,3.4,4.4], coh_labels):
-    ax.text(x, y_limits[1] - 1, label, ha='center', weight='bold')
+    ax.text(x, y_limits[1] - 0.5e-4, label, ha='center', weight='bold')
         
 shaded_regions = [(1.35, 1.8), (2.35, 2.8), (3.35, 3.8), (4.35, 4.8)]
 for start, end in shaded_regions:
     ax.fill_between(x=[start, end], y1=y_limits[0], y2=y_limits[1], color='gray', alpha=0.3)
 
 plt.xlabel('Time (s)', fontsize=12)
-plt.ylabel('Amplitude (\u03bcV)', fontsize=12)
+# plt.ylabel('Global Field Power (\u03bcV)', fontsize=12)
+plt.ylabel('Sum of Squares (\u03bcV $\mathregular{^{2}}$)', fontsize=12)
 # plt.suptitle('Picks - Cz, Fz, FC1, FC2', x=0.8, ha='right', fontsize=10)
 plt.tight_layout()
 plt.show()
 
-plt.savefig(fig_loc + "Binding20_FullTime_AcrossAge.png", dpi=500, bbox_inches="tight")
+plt.savefig(fig_loc + "SS20_FullTime_0.1-40Hz_AcrossAge.png", dpi=500, bbox_inches="tight")

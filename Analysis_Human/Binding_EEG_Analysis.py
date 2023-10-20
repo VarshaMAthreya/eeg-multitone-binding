@@ -40,7 +40,7 @@ save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Fig
 save_loc_mat= 'D:/PhD/Data/Binding_matfiles/0.4-40Hz/'
 save_epochs_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Epochs-fif/'
 
-subjlist = ['S104']
+subjlist =  ['S337']
  
 condlist = [1, 2]  # List of conditions- Coherence of 12 and 20 tones
 condnames = ['12', '20']
@@ -57,11 +57,11 @@ for subj in subjlist:
     evelist = []
 
     for k, rawname in enumerate(bdfs):
-        rawtemp, evestemp = bs.importbdf(fpath + rawname, verbose='DEBUG', refchans=['EXG1', 'EXG2'])
+        rawtemp, evestemp = bs.importbdf(fpath + rawname, verbose='DEBUG', refchans=['A7', 'A24'])
         rawlist += [rawtemp, ]
         evelist += [evestemp, ]
     raw, eves = mne.concatenate_raws(rawlist, events_list=evelist)
-    raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6))    # To check and mark bad channels
+    # raw.plot(duration=25.0, n_channels=32, scalings=dict(eeg=100e-6))    # To check and mark bad channels
 
 #%% Reject a few of the electrodes for each subject
   
@@ -137,6 +137,9 @@ for subj in subjlist:
         raw.info['bads'].append('A7') 
         raw.info['bads'].append('A24')
         raw.info['bads'].append('A30')
+        raw.info['bads'].append('A28')
+        raw.info['bads'].append('A20')
+        
         
     if subj == 'S345':
         raw.info['bads'].append('A30') 
@@ -155,6 +158,9 @@ for subj in subjlist:
     if subj == 'S308':
         raw.info['bads'].append('A6') 
         raw.info['bads'].append('A3')
+        raw.info['bads'].append('A7') 
+        raw.info['bads'].append('A11') 
+        raw.info['bads'].append('A24') 
         
     if subj == 'S344':
         raw.info['bads'].append('A24')
@@ -179,30 +185,31 @@ for subj in subjlist:
         raw.info['bads'].append('A30')
         raw.info['bads'].append('A2')
         raw.info['bads'].append('A29')
-    
-    if subj == 'S308':
-       raw.info['bads'].append('A7') 
-       raw.info['bads'].append('A11') 
-       raw.info['bads'].append('A24') 
        
     if subj == 'S207':
         raw.info['bads'].append('A7') 
         raw.info['bads'].append('A3') 
         raw.info['bads'].append('A15') 
-     
+ 
+    if subj == 'S309':
+        raw.info['bads'].append('A6') 
+    
+    if subj == 'S341':
+        raw.info['bads'].append('A16')
+        raw.info['bads'].append('A7') 
 #%% Filtering for cortical responses 
 
-    raw.filter(1, 40.)
+    raw.filter(0.4, 40.)
     raw.info
 
 # %% Blink Rejection
 
     blinks = find_blinks(raw)
-    raw.plot(events=blinks, duration=25.0, n_channels=32, scalings=dict(eeg=200e-6))
+    # raw.plot(events=blinks, duration=25.0, n_channels=32, scalings=dict(eeg=200e-6))
     epochs_blinks = mne.Epochs(raw, blinks, event_id=998, baseline=(-0.25, 0.25), reject=dict(eeg=500e-6), tmin=-0.25, tmax=0.25)
     blink_proj = compute_proj_epochs(epochs_blinks, n_eeg=1)
     raw.add_proj(blink_proj)  # Adding the n=blink proj to the data -- removal of blinks
-    raw.plot_projs_topomap()     # Visualizing the spatial filter
+    # raw.plot_projs_topomap()     # Visualizing the spatial filter
 
 # %% Plotting Onset responses
 
@@ -284,11 +291,11 @@ for subj in subjlist:
 #     #mne.viz.plot_compare_evokeds(evkds,picks=31,title = conds[it + 10])
 #%% Plot Comparisons
 
-# combos_comp = [[0,1], [10,12], [11,13]]
-# comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
-
-# for it,c in enumerate(combos_comp):
-#     evkds = [evkd[c[0]], evkd[c[1]]]
+    combos_comp = [[0,1], [10,12], [11,13]]
+    comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
+    
+    for it,c in enumerate(combos_comp):
+        evkds = [evkd[c[0]], evkd[c[1]]]
 #     #mne.viz.plot_compare_evokeds(evkds,title=comp_labels[it]
 #%% Make Plots outside of MNE
     # picks=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
@@ -298,7 +305,7 @@ for subj in subjlist:
     
     # fig, ax = plt.subplots(3,1,sharex=True)
     
-    # t = epochs[0].times
+    t = epochs[0].times
     
     # for cnd in range(len(combos_comp)):
     #     cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
@@ -363,42 +370,42 @@ for subj in subjlist:
 
 # #%% Save Epochs, evokeds for 32 channels for 8 different conditions - Pickles and mat files 
 
-#     save_indexes = [0,1,10,11,12,13,14,15]      # 0 - 12 Onset (Upto 1.1 s)
-#                                                 # 1 - 20 Onset (Upto 1.1 s)
-#                                                 # 10 - 12 Incoherent to Coherent
-#                                                 # 11 - 12 Coherent to Incoherent
-#                                                 # 12 - 20 Incoherent to Coherent 
-#                                                 # 13 - 20 Coherent to Incoherent 
-#                                                 # 14 - 12 Full 5 seconds
-#                                                 # 15 - 20 Full 5 seconds 
-#     conds_save = []
-#     epochs_save = []
-#     evkd_save = [] 
-#     t = t 
-#     t_full = epochs[-1].times
-#     picks = [4, 7, 22, 25, 30, 31]
+    save_indexes = [0,1,10,11,12,13,14,15]      # 0 - 12 Onset (Upto 1.1 s)
+                                                # 1 - 20 Onset (Upto 1.1 s)
+                                                # 10 - 12 Incoherent to Coherent
+                                                # 11 - 12 Coherent to Incoherent
+                                                # 12 - 20 Incoherent to Coherent 
+                                                # 13 - 20 Coherent to Incoherent 
+                                                # 14 - 12 Full 5 seconds
+                                                # 15 - 20 Full 5 seconds 
+    conds_save = []
+    epochs_save = []
+    evkd_save = [] 
+    t = t 
+    t_full = epochs[-1].times
+    # picks = [4, 7, 22, 25, 30, 31]
     
-#     for si in save_indexes:
-#           conds_save.append(conds[si])
-#           evkd_save.append(evkd[si])
-#           # epochs_save.append((epochs[si].get_data()[:,picks,:]).mean(axis=1)) # Saving epochs 
+    for si in save_indexes:
+          conds_save.append(conds[si])
+          evkd_save.append(evkd[si])
+          # epochs_save.append((epochs[si].get_data()[:,picks,:]).mean(axis=1)) # Saving epochs 
 
-#     # pickle_loc='D:/PhD/Data/Binding_Pickles/'
+    # pickle_loc='D:/PhD/Data/Binding_Pickles/'
 
-#     # with open(os.path.join(pickle_loc,subj+'_Binding_0.4_AllChan.pickle'),'wb') as file:
-#     #     pickle.dump([t, t_full, conds_save, epochs_save,evkd_save],file)
-#     mat_ids1 = dict(save_indexes=save_indexes, conds_save = conds_save, 
-#                         evkd0 =evkd_save[0].data, 
-#                         evkd1 =evkd_save[1].data, 
-#                         evkd2 =evkd_save[2].data, 
-#                         evkd3 =evkd_save[3].data, 
-#                         evkd4 =evkd_save[4].data, 
-#                         evkd5 =evkd_save[5].data, 
-#                         evkd6 =evkd_save[6].data, 
-#                         evkd7 =evkd_save[7].data, 
-#                         t=t, t_full=t_full)
-#     savemat(save_loc_mat + subj + '_1-40Hz_Evoked_AllChan.mat', mat_ids1)
+    # with open(os.path.join(pickle_loc,subj+'_Binding_0.4_AllChan.pickle'),'wb') as file:
+    #     pickle.dump([t, t_full, conds_save, epochs_save,evkd_save],file)
+    mat_ids1 = dict(save_indexes=save_indexes, conds_save = conds_save, 
+                        evkd0 =evkd_save[0].data, 
+                        evkd1 =evkd_save[1].data, 
+                        evkd2 =evkd_save[2].data, 
+                        evkd3 =evkd_save[3].data, 
+                        evkd4 =evkd_save[4].data, 
+                        evkd5 =evkd_save[5].data, 
+                        evkd6 =evkd_save[6].data, 
+                        evkd7 =evkd_save[7].data, 
+                        t=t, t_full=t_full)
+    savemat(save_loc_mat + subj + '_0.4-40Hz_Evoked_AllChan.mat', mat_ids1)
     
-#     print ('Woohoooo! Saved -- ' + str(subj) + '!!')
+    print ('Woohoooo! Saved -- ' + str(subj) + '!!')
     
-del epochs, evkd, evkd_save,epochs_save, cz_20, cz_12
+del epochs, evkd, evkd_save,epochs_save

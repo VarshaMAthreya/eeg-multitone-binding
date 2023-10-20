@@ -23,7 +23,7 @@ plt.rcParams["figure.figsize"] = (5.5,5)
 plt.rcParams['figure.dpi'] = 120
 #%%Setting up stuff
 save_fig = 'C:/Users/vmysorea/Desktop/PhD/GreenLightMeeting/Figures/'
-save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
+save_mat_loc = 'D:/PhD/Data/Binding_matfiles/0.1-40Hz/'
 
 # subjlist = ['S104']
 
@@ -122,6 +122,21 @@ for subj in range(len(subjlist)):
     evkds5[subj,:] = evkd5.mean(axis=0)
     evkds6[subj,:] = evkd6.mean(axis=0)
     evkds7[subj,:] = evkd7.mean(axis=0)
+    
+### Sum of squares -- Not doing X-Mean, as 'mean' here is the evoked response here is already referenced to the earlobes
+picks_ss = [3, 30, 26, 4, 25, 7, 31, 22, 8, 21, 11, 12, 18]
+
+ss_all12 = np.zeros((len(subjlist),t_full.size))
+ss_all20 = np.zeros((len(subjlist),t_full.size))
+
+for subj in range(len(subjlist)):
+    sub = subjlist [subj]
+    dat = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+    dat.keys()    
+    ss6 = dat['evkd6'][picks_ss]      ###Doing this only for the 5 sec plot 
+    ss7 = dat['evkd7'][picks_ss]
+    ss_all12[subj,:] = (ss6**2).sum(axis=0)
+    ss_all20[subj,:] = (ss7**2).sum(axis=0)
 
 #%% Plotting and saving of 32 channel GFP across all subjects -- Baselined for 1 sec interval for coh and incoherent periods
 
@@ -165,13 +180,13 @@ plt.show()
 mat_id = dict(sub=subjlist,gfp12 = gfp12, gfp20=gfp20,gfp12_coh=gfp12_coh,gfp12_incoh=gfp12_incoh,
               gfp20_coh=gfp20_coh,gfp20_incoh=gfp20_incoh)
 
-savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_1sec(N=39).mat', mat_id)
+# savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_1sec(N=39).mat', mat_id)
 
 #%% Calculation and saving of 32 channel DC shift in GFP across all subjects -- For entire 5 second duration
 
-plt.errorbar(t_full, gfps6.mean(axis=0), yerr=sem(gfps6), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
-plt.errorbar(t_full, gfps7.mean(axis=0), yerr=sem(gfps7), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
-plt.suptitle('Binding - GFP (N='+ str(len(subjlist)) +')')
+plt.errorbar(t_full, gfps6.mean(axis=0), yerr=sem(gfps6), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='#1b9e77', linewidth=2, ecolor='#1b9e77',alpha=0.3)
+plt.errorbar(t_full, gfps7.mean(axis=0), yerr=sem(gfps7), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='#d95f02', linewidth=2, ecolor='#d95f02',alpha=0.3)
+plt.suptitle('Binding (N='+ str(len(subjlist)) +')')
 plt.subplots_adjust(top=0.88)
 plt.legend()
 # fig.tight_layout()
@@ -223,7 +238,21 @@ plt.show()
 
 mat_ids1=dict(subj=subjlist,gfps12_5sec=gfps12_5sec, gfps20_5sec=gfps20_5sec)
 
-savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_5sec(N=39)_New.mat', mat_ids1)
+# savemat(save_mat_loc + 'AllSubj_GFPDiff_0.4-40Hz_5sec(N=39)_New.mat', mat_ids1)
+
+#%%% #%% Plotting sum of squares across all subjects -- Baselined for 1 sec interval for coh and incoherent periods
+
+plt.errorbar(t_full, ss_all12.mean(axis=0), yerr=sem(ss_all12), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
+plt.errorbar(t_full, ss_all20.mean(axis=0), yerr=sem(ss_all20), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
+plt.suptitle('Binding - Sum of Squares (N='+ str(len(subjlist)) +')')
+plt.subplots_adjust(top=0.88)
+plt.legend()
+# fig.tight_layout()
+plt.ylabel('Sum of Squares (\u03bcV)')
+plt.xlabel('Time(s)',fontsize=14)
+plt.rcParams["figure.figsize"] = (6.5,5)
+plt.xticks(fontsize=14)
+plt.show()
 
 #%% Plotting and calculating only A32 channel amp DC shift for 300-800 ms for all subjects 
 fig, ax = plt.subplots(3, 1, sharex = True, constrained_layout=True)
@@ -310,7 +339,7 @@ for condition, evkds in evkds_all.items():
                                   'P2_latency': P2_latency,
                                   'Avg_steadystate': avg_steadystate}
 
-savemat(save_mat_loc + 'Binding_1-40Hz_Peaks(N=42).mat', binding_results)
+# savemat(save_mat_loc + 'Binding_1-40Hz_Peaks(N=42).mat', binding_results)
 
 #%%
 ### Calculating DC shift from 300-800 ms (Amplitude) -- Baselined -- 1 second

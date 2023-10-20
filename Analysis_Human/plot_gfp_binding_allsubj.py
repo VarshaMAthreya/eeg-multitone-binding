@@ -23,7 +23,7 @@ plt.rcParams['figure.dpi'] = 120
 #%%Setting up stuff
 save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
 epochs_loc = 'D:/PhD/Data/Epochs-fif/'
-save_mat_loc = 'D:/PhD/Data/Binding_matfiles/'
+save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 
 ### Haven't considered S273 and S345
 subjlist = ['S268', 'S269', 'S274', 'S282', 'S285',
@@ -54,7 +54,7 @@ gfps20 = np.zeros((len(subjlist),22529))
 
 for subj in range(len(subjlist)):
     sub = subjlist [subj]
-    dat = io.loadmat(save_mat_loc + sub + '_allevoked0.4_with12.mat', squeeze_me=True)
+    dat = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
     dat.keys()
     evoked = dat['evoked']
     evoked12 = dat['evoked12']
