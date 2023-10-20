@@ -28,11 +28,14 @@ plt.rcParams['figure.dpi'] = 120
 
 #%% Setting locs and loading data
 
-froot = 'D:/PhD/Data/Chin_Data/Awake/'  # file location
-save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/Figures/'
-pickle_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/Chin_Pickles/'
+froot = 'D:/PhD/Data/Chin_Data/LightSedation/'  # file location
+save_loc = ('C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/GapDetection_EEG/Analysis_Chinchilla/')
 
-subjlist = ['Q414_2']  # Load subject folder
+# froot = 'D:/PhD/Data/Chin_Data/Awake/'  # file location
+# save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/Figures/'
+# pickle_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Chin_Analysis/Chin_Pickles/'
+
+subjlist = ['Q428']  # Load subject folder
 condlist = [1] 
 condnames = ['12']
 
@@ -41,7 +44,7 @@ for subj in subjlist:
     # Load data and read event channel
     fpath = froot + subj + '/'
     bdfs = fnmatch.filter(os.listdir(fpath), subj +
-                          '_Awake_Binding*.bdf')
+                          '_LightSedation_Binding_12Only*.bdf')
 
     # Load data and read event channel
     rawlist = []
@@ -53,7 +56,7 @@ for subj in subjlist:
         rawlist += [rawtemp, ]
         evelist += [evestemp, ]
     raw, eves = mne.concatenate_raws(rawlist, events_list=evelist)
-    raw, eves = raw.resample(4096, events=eves)
+    # raw, eves = raw.resample(4096, events=eves)
     raw.set_channel_types({'EXG3':'eeg'})           #Mastoid -34
     raw.set_channel_types({'EXG4':'eeg'})           #Vertex -35
     raw.set_channel_types({'EXG5':'eeg'})           #Ground -36
@@ -73,6 +76,12 @@ for subj in subjlist:
 
 #raw.crop(tmin=100,tmax=175,include_tmax=True)
 #raw.plot()
+
+#%% Bad channels        
+    if subj == ['Q428']:
+       raw.info['bads'].append('A12')
+       raw.info['bads'].append('A26')
+       raw.info['bads'].append('A20')
 #%% Heart beat artifact rej
 # heartbeat = find_ecg_events(raw, ch_name='EXG5')
 # raw.plot(events=heartbeat)
