@@ -22,9 +22,14 @@ warnings.simplefilter('ignore')
 plt.rcParams["figure.figsize"] = (5.5,5)
 plt.rcParams['figure.dpi'] = 120
 #%%Setting up stuff
-save_fig = 'C:/Users/vmysorea/Desktop/PhD/GreenLightMeeting/Figures/'
-save_mat_loc = 'D:/PhD/Data/Binding_matfiles/0.1-40Hz/'
+save_fig = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/FinalThesis/ForThesisDoc/'
+save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 
+<<<<<<< Updated upstream
+=======
+# subjlist = ['S104'] # Have saved only 4 channels evoked response!!!!
+
+>>>>>>> Stashed changes
 subjlist = ['S273', 'S069', 'S072', 'S078', 'S088', 
             'S105', 'S207', 'S259', 'S260', 'S268', 
             'S269', 'S270', 'S271', 'S272', 'S274', 
@@ -35,6 +40,19 @@ subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
             'S339', 'S340', 'S341', 'S342', 'S344', 
             'S345', 'S347', 'S352', 'S355', 'S358']
 
+<<<<<<< Updated upstream
+=======
+subjlist = ['S069', 'S072', 'S078', 'S088', 'S105', 
+            'S259', 'S260', 'S268', 'S269', 'S270', 
+            'S271', 'S272', 'S273', 'S274', 'S277', 
+            'S279', 'S280', 'S281', 'S282', 'S284', 
+            'S285', 'S288', 'S290', 'S291', 'S303', 
+            'S305', 'S308', 'S309', 'S310', 'S312', 
+            'S337', 'S339', 'S340', 'S341', 'S342', 
+            'S344', 'S345', 'S347', 'S352', 'S355', 
+            'S358']
+
+>>>>>>> Stashed changes
 #Uncommon == 'S105', 'S272', 'S309', 'S337', 'S345','S355', 'S358'
 
 #Removed --  'S273'-- Looks like equal amount of positive and negative components for GFP ; 
@@ -100,14 +118,14 @@ for subj in range(len(subjlist)):
     gfps5[subj,:] = evkd5[0:31].std(axis=0) 
     gfps6[subj,:] = evkd6[0:31].std(axis=0) 
     gfps7[subj,:] = evkd7[0:31].std(axis=0) 
-    evkds0[subj,:] = evkd0.mean(axis=0)       #Taking the mean of 4 channels (excluding the EXGs)
-    evkds1[subj,:] = evkd1.mean(axis=0)
-    evkds2[subj,:] = evkd2.mean(axis=0)
-    evkds3[subj,:] = evkd3.mean(axis=0)
-    evkds4[subj,:] = evkd4.mean(axis=0)
-    evkds5[subj,:] = evkd5.mean(axis=0)
-    evkds6[subj,:] = evkd6.mean(axis=0)
-    evkds7[subj,:] = evkd7.mean(axis=0)
+    evkds0[subj,:] = (evkd0.mean(axis=0))*1e6      #Taking the mean of 4 channels (excluding the EXGs)
+    evkds1[subj,:] = (evkd1.mean(axis=0))*1e6
+    evkds2[subj,:] = (evkd2.mean(axis=0))*1e6
+    evkds3[subj,:] = (evkd3.mean(axis=0))*1e6
+    evkds4[subj,:] = (evkd4.mean(axis=0))*1e6
+    evkds5[subj,:] = (evkd5.mean(axis=0))*1e6
+    evkds6[subj,:] = (evkd6.mean(axis=0))*1e6
+    evkds7[subj,:] = (evkd7.mean(axis=0))*1e6
     
 ### Sum of squares -- Not doing X-Mean, as 'mean' here is the evoked response here is already referenced to the earlobes
 picks_ss = [3, 30, 26, 4, 25, 7, 31, 22, 8, 21, 11, 12, 18]
@@ -240,41 +258,25 @@ plt.rcParams["figure.figsize"] = (6.5,5)
 plt.xticks(fontsize=14)
 plt.show()
 
-#%% Plotting and calculating only A32 channel amp DC shift for 300-800 ms for all subjects 
-fig, ax = plt.subplots(3, 1, sharex = True, constrained_layout=True)
-ax[0].errorbar(t, evkds0.mean(axis=0), yerr=sem(evkds0), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
-ax[0].errorbar(t, evkds1.mean(axis=0), yerr=sem(evkds1), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
-ax[1].errorbar(t, evkds2.mean(axis=0), yerr=sem(evkds2), color='green', linewidth=2, ecolor='darkseagreen')
-ax[1].errorbar(t, evkds3.mean(axis=0), yerr=sem(evkds3), color='purple', linewidth=2, ecolor='thistle')
-ax[2].errorbar(t, evkds4.mean(axis=0), yerr=sem(evkds4), color='green', linewidth=2, ecolor='darkseagreen')
-ax[2].errorbar(t, evkds5.mean(axis=0), yerr=sem(evkds5), color='purple', linewidth=2, ecolor='thistle')
-plt.suptitle('Binding A32 - Amplitude (N='+ str(len(subjlist)) +')')
-fig.subplots_adjust(top=0.88)
-ax[0].set_title('Onset')
-ax[1].title.set_text('Incoherent to Coherent')
-ax[2].title.set_text('Coherent to Incoherent')
-ax[0].legend()
-# fig.tight_layout()
-fig.text(0, 0.55,'Amplitude (\u03bcV)',fontsize=14, va='center', rotation='vertical')
-plt.xlabel('Time(s)',fontsize=14)
-plt.rcParams["figure.figsize"] = (6.5,5)
-plt.xticks(fontsize=14)
-plt.show()
-
 #%%##Calculating P1, P2 peaks and latencies 
 
-tP1_start, tP1_end = 0, 0.15
-tP2_start, tP2_end = 0.16, 0.3
+# tP1_start, tP1_end = 0, 0.15
+# tP2_start, tP2_end = 0.16, 0.3
+# t_avg_start, t_avg_end = 0.3, 0.8
+
+tP1_start, tP1_end = 0, 0.1
+tP2_start, tP2_end = 0.11, 0.3
 t_avg_start, t_avg_end = 0.3, 0.8
 
 binding_results = {}
 
-evkds_all = {'Onset12':evkds0, 
-             'Onset20':evkds1, 
-             'Incoherent2Coherent_12':evkds2,
-             'Coherent2Incoherent_12':evkds3,
-             'Incoherent2Coherent_20':evkds4,
-             'Coherent2InCoherent_20':evkds5}
+# evkds_all = {'Onset12':evkds0, 
+#               'Onset20':evkds1, 
+#               'Coherent2Incoherent_12':evkds3,
+#               'Coherent2InCoherent_20':evkds5}
+
+evkds_all = {'Incoherent2Coherent_12':evkds2,
+              'Incoherent2Coherent_20':evkds4}
 
 # Loop through conditions
 for condition, evkds in evkds_all.items():
@@ -300,21 +302,59 @@ for condition, evkds in evkds_all.items():
         peak_index_t1 = t1_indices[data_t1.argmax()]
         peak_index_t2 = t2_indices[data_t2.argmax()]
         
-        # Convert the peak indices to time
+        # # Ensure the peak picked is positive, if not, find the closest positive peak!
+        # if data_t1.max() < 0:
+        #     nearest_positive_index = t1_indices[(data_t1 > 0).argmax()] if (data_t1 > 0).any() else -1
+        #     if nearest_positive_index != -1:
+        #         peak_value_t1 = data_t1[nearest_positive_index]
+        #         peak_latency_t1 = t[nearest_positive_index]
+                
+        #     else:
+        #         # No positive values found, set values to None or a suitable default
+        #         peak_value_t1 = np.NAN
+        #         peak_latency_t1 = np.NAN
+    
+        # else:
+        #     # Peak value is positive
+        #     peak_value_t1 = data_t1.max() #Get peak amplitude
+        #     peak_latency_t1 = t[peak_index_t1]     #Get latency in s from the index
+        
+        # if data_t2.max() < 0:
+        #     nearest_positive_index_t2 = t2_indices[(data_t2 > 0).argmax()] if (data_t2 > 0).any() else -1
+        #     if nearest_positive_index_t2 != -1:
+        #         peak_value_t2 = data_t2[nearest_positive_index_t2]
+        #         peak_latency_t2 = t[nearest_positive_index_t2]
+        #     else:
+        #         # No positive values found, set values to None or a suitable default
+        #         peak_value_t2 = np.NAN
+        #         peak_latency_t2 = np.NAN
+          
+        # else:
+        #     # Peak value in P2 is positive
+        #     peak_value_t2 = data_t2.max()
+        #     peak_latency_t2 = t[peak_index_t2]
+           
+        # P1_peak.append(peak_value_t1)
+        # P1_latency.append(peak_latency_t1)
+        # P2_peak.append(peak_value_t2)
+        # P2_latency.append(peak_latency_t2)
+    
+        
+        ### Convert the peak indices to time -- OLD without picking only the positive peaks 
         peak_latency_t1 = t[peak_index_t1]
         peak_latency_t2 = t[peak_index_t2]
         
-        # Get the peak values
-        peak_value_t1 = (data_t1.max())*1e6
-        peak_value_t2 = (data_t2.max())*1e6
+        # # Get the peak values
+        peak_value_t1 = (data_t1.max())
+        peak_value_t2 = (data_t2.max())
         
         P1_peak.append(peak_value_t1)
         P1_latency.append(peak_latency_t1)
         P2_peak.append(peak_value_t2)
         P2_latency.append(peak_latency_t2)
         
-        # Calculate average response within the average time slot
-        avg_response = (np.mean(data_avg))*1e6
+        ##### Calculate average response within the average time slot
+        avg_response = (np.mean(data_avg))
         avg_steadystate.append(avg_response)
     
     # Store results in the dictionary
@@ -325,9 +365,60 @@ for condition, evkds in evkds_all.items():
                                   'P2_latency': P2_latency,
                                   'Avg_steadystate': avg_steadystate}
 
-# savemat(save_mat_loc + 'Binding_1-40Hz_Peaks(N=42).mat', binding_results)
+savemat(save_mat_loc + 'Binding_1-40Hz_Peaks_NewLatencies_InCoh.mat', binding_results)
 
-#%%
+#%% #%% Plotting and calculating only A32 channel amp DC shift for 300-800 ms for all subjects 
+fig, ax = plt.subplots(3, 1, sharex = True, constrained_layout=True)
+ax[0].errorbar(t, evkds0.mean(axis=0), yerr=sem(evkds0), label = '12 tone coherence (N='+ str(len(subjlist)) +')', color='green', linewidth=2, ecolor='darkseagreen')
+ax[0].errorbar(t, evkds1.mean(axis=0), yerr=sem(evkds1), label = '20 tone coherence (N='+ str(len(subjlist)) +')', color='purple', linewidth=2, ecolor='thistle')
+ax[1].errorbar(t, evkds2.mean(axis=0), yerr=sem(evkds2), color='green', linewidth=2, ecolor='darkseagreen')
+ax[1].errorbar(t, evkds3.mean(axis=0), yerr=sem(evkds3), color='purple', linewidth=2, ecolor='thistle')
+ax[2].errorbar(t, evkds4.mean(axis=0), yerr=sem(evkds4), color='green', linewidth=2, ecolor='darkseagreen')
+ax[2].errorbar(t, evkds5.mean(axis=0), yerr=sem(evkds5), color='purple', linewidth=2, ecolor='thistle')
+plt.suptitle('Binding A32 - Amplitude (N='+ str(len(subjlist)) +')')
+fig.subplots_adjust(top=0.88)
+ax[0].set_title('Onset')
+ax[1].title.set_text('Incoherent to Coherent')
+ax[2].title.set_text('Coherent to Incoherent')
+ax[0].legend()
+# fig.tight_layout()
+fig.text(0, 0.55,'Amplitude (\u03bcV)',fontsize=14, va='center', rotation='vertical')
+plt.xlabel('Time(s)',fontsize=14)
+plt.rcParams["figure.figsize"] = (6.5,5)
+plt.xticks(fontsize=14)
+plt.show()
+
+##Plotting full time 
+
+fig, ax = plt.subplots(figsize=(8, 4), constrained_layout=True)
+plt.errorbar(t_full, evkds6.mean(axis=0), yerr=sem(evkds6), label = '12 Tone', color='green', linewidth=2, ecolor='darkseagreen')
+plt.errorbar(t_full, evkds7.mean(axis=0), yerr=sem(evkds7), label = '20 Tone', color='purple', linewidth=2, ecolor='thistle')
+plt.title('EEG Across-Channel Measure | Picks - Cz, Fz, FC1, FC2 (N='+ str(len(subjlist)) +')')
+plt.xlim(-0.2, 5.5)
+plt.ylim(-1,5)
+ymax = 5
+plt.vlines(x=[0,1,2,3,4,5], ymin=-1, ymax= ymax+0.5, colors='black', ls='--',alpha=1)
+ax.text(0, ymax+0.1, 'Stim On', va='center', ha='center',  weight='bold')
+ax.text(0.5, ymax-0.5, 'Incoherent', va='center', ha='center',  weight='bold')
+ax.text(1.5, ymax-0.5, 'Coherent', va='center', ha='center',  weight='bold')
+ax.text(2.5, ymax-0.5, 'Incoherent', va='center', ha='center', weight='bold')
+ax.text(3.5, ymax-0.5, 'Coherent', va='center', ha='center',  weight='bold')
+ax.text(4.5, ymax-0.5, 'Incoherent', va='center', ha='center',  weight='bold')
+ax.text(5, ymax+0.1, 'Stim End', va='center', ha='center',  weight='bold')
+ax.axvspan(1.3,1.8, alpha=0.3,color='gray')
+ax.axvspan(3.3,3.8, alpha=0.3,color='gray')
+ax.axvspan(2.3,2.8, alpha=0.3,color='gray')
+ax.axvspan(4.3,4.8, alpha=0.3,color='gray')
+plt.legend(loc='upper right', fontsize='xx-small')
+# fig.tight_layout()
+plt.ylabel('Amplitude (\u03bcV)',fontsize=14)
+plt.xlabel('Time(s)',fontsize=14)
+plt.xticks(fontsize=14)
+plt.show()
+
+plt.savefig(save_fig + "FullTime_1-40Hz_AmpAcrossCond.png", dpi=500, bbox_inches="tight")
+
+
 ### Calculating DC shift from 300-800 ms (Amplitude) -- Baselined -- 1 second
 
 t1 = t>=0.3
@@ -407,4 +498,3 @@ plt.show()
 mat_ids1=dict(subj=subjlist,evokeds12_5sec=evokeds12_5sec, evokeds20_5sec=evokeds20_5sec)
 
 savemat(save_mat_loc + 'AllSubj_A32_EvokedDiff_0.4-40Hz_5sec(N=39).mat', mat_ids1)
-

@@ -25,25 +25,35 @@ warnings.simplefilter('ignore')
 plt.rcParams["figure.figsize"] = (5.5,5)
 plt.rcParams['figure.dpi'] = 120
 #%%Setting up stuff
-save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
-epochs_loc = 'D:/PhD/Data/Epochs-fif/'
-save_mat_loc ='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Matfiles(Avg)/Gamma_Matfiles/'
+save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/FinalThesis/'
+data_loc ='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Analyzed_FilesFigures_Human/Gamma_Matfiles/OtherChans/'
 
-### Haven't considered S273 and S345
-subjlist = ['S268', 'S269', 'S274', 'S282', 'S285',
-            'S277', 'S279', 'S280','S259','S270', 'S271', 
-            'S281','S290', 'S284', 'S305','S303','S288','S260',
-            'S352', 'S341', 'S312', 'S347', 'S340','S078','S069',
-            'S088','S342','S072','S308','S344','S291','S310','S339']
+### S337 Not there???
 
-subjlist_y = ['S273','S268', 'S269', 'S274', 'S282', 'S285',
-            'S277', 'S279', 'S280','S259','S270', 'S271', 
-            'S281','S290', 'S284', 'S305','S303','S288','S260',
-            'S352', 'S341']
+### Check S069!!!
 
-subjlist_o = ['S312', 'S347', 'S340','S078',
-              'S088','S342','S072','S308','S344',
-              'S291','S310','S339']
+# subjlist = ['S072', 'S078', 'S088', 'S105',
+#             'S259', 'S260', 'S268', 'S269', 'S270', 
+#             'S271', 'S272', 'S273', 'S274', 'S277', 
+#             'S279', 'S280', 'S281', 'S282', 'S284', 
+#             'S285', 'S288', 'S290', 'S291', 'S303', 
+#             'S305', 'S308', 'S309', 'S310', 'S312', 
+#             'S339', 'S340', 'S341', 'S342', 
+#             'S344', 'S345', 'S347', 'S352', 'S355', 
+#             'S358']
+
+
+subjlist_y = ['S273','S268','S269','S274','S282',
+              'S285','S272','S259','S277','S279',
+              'S280','S270','S271','S281','S290',
+              'S284','S305','S303','S288','S260',
+              'S309','S288','S341','S352','S312',
+              'S347','S340']
+
+subjlist_o = ['S078', 'S355','S088','S342',
+              'S072','S358','S308','S344','S105',
+              'S345','S291','S310','S339']
+
 
 #S104 and S345 excluded (weird data) - S337 no EXGs
 #%% Loading files for 12 and 20 condition for all subjects - No age separation 
@@ -56,41 +66,44 @@ subjlist_o = ['S312', 'S347', 'S340','S078',
 # power12_high=[]
 # power20_high=[]
 
-power12_all = np.zeros((len(subjlist_o),25,22120))
-power20_all = np.zeros((len(subjlist_o),25,22120))
-power12_low = np.zeros((len(subjlist_o),15,22120))
-power20_low = np.zeros((len(subjlist_o),15,22120))
-power12_high = np.zeros((len(subjlist_o),15,22120))
-power20_high = np.zeros((len(subjlist_o),15,22120))
+power12 = np.zeros((len(subjlist_y),40,22120))
+power20 = np.zeros((len(subjlist_y),40,22120))
+# power12_low = np.zeros((len(subjlist_o),15,22120))
+# power20_low = np.zeros((len(subjlist_o),15,22120))
+# power12_high = np.zeros((len(subjlist_o),15,22120))
+# power20_high = np.zeros((len(subjlist_o),15,22120))
 
-for subj in range(len(subjlist_o)):
-    sub = subjlist_o [subj]
-    dat = io.loadmat(save_mat_loc + sub + '_A32_gamma.mat', squeeze_me=True)
+for subj in range(len(subjlist_y)):
+    sub = subjlist_y [subj]
+    dat = io.loadmat(data_loc + sub + '_OtherChans_gamma.mat', squeeze_me=True)
     dat.keys()
-    a = (dat['power12_all'])
-    b = (dat ['power20_all'])
-    c = (dat['power12_low'])
-    d = (dat['power20_low'])
-    e = (dat['power12_high'])
-    f = (dat['power20_high'])
+    a = (dat['power12_all']).mean(axis=0)
+    b = (dat ['power20_all']).mean(axis=0)
+    # c = (dat['power12_low'])
+    # d = (dat['power20_low'])
+    # e = (dat['power12_high'])
+    # f = (dat['power20_high'])
     freqs= dat['freqs']
-    low_freqs=dat['low_freqs']
-    high_freqs=dat['high_freqs']
+    # low_freqs=dat['low_freqs']
+    # high_freqs=dat['high_freqs']
     picks=dat['picks']
-    n_cycles=dat['n_cycles']
-    n_cycles1=dat['n_cycles1']
-    n_cycles2=dat['n_cycles2']
+    # n_cycles=dat['n_cycles']
+    # n_cycles1=dat['n_cycles1']
+    # n_cycles2=dat['n_cycles2']
     t=dat['t']
-    power12_all[subj,:] = a
-    power20_all[subj,:] = b
-    power12_low[subj,:] = c
-    power20_low[subj,:] = d 
-    power12_high[subj,:] =e
-    power20_high[subj,:] = f
+    power12[subj, :] = a
+    power20[subj, :] = b
+    # power12[subj,:] = a
+    # power20[subj,:] = b
+    # power12_low[subj,:] = c
+    # power20_low[subj,:] = d 
+    # power12_high[subj,:] =e
+    # power20_high[subj,:] = f
 
-power20_low=np.array(power20_low.mean(axis=0))
-power20_low=np.array(power20_low.mean(axis=0))
-power12_all=power12_all.T
+# power20_low=np.array(power20_low.mean(axis=0))
+# power20_low=np.array(power20_low.mean(axis=0))
+power12_all=power12.mean(axis=0)
+power20_all=power20.mean(axis=0)
 
 # nFFT=int(11060)
 # fs=int(4096)
@@ -154,11 +167,11 @@ fs=4096
 interval = int(fs/5)
 overlap=int(interval*0.95)
 
-f4,t4,Sxx4 = signal.spectrogram (power20_all,fs=fs,nperseg=interval,
+f4,t4,Sxx4 = signal.spectrogram (power20_all.mean(axis=0),fs=fs,nperseg=interval,
                          noverlap=overlap)
 plt.pcolormesh(t4,f4,10*np.log(Sxx4), cmap='inferno')
 plt.colorbar()
-plt.title('ONH - All Gamma')
+plt.title('All Subjects - All Gamma')
 plt.ylim([30,80])
 # plt.xlim([-0.3,5.1])
 plt.show()
@@ -167,20 +180,25 @@ plt.show()
 
 # Baseline the output
 
-power20_high = (power20_high.mean(axis=0))
+# power20 = (power20.mean(axis=0))
 # rescale(power20_high, t, (-0.3, 0.0), mode="mean", copy=False)
 
-vmin=-1*1e-10
-vmax=2.5*1e-10
-#
+vmin=-2*1e-7
+vmax=2*1e-7
 
 fig, ax = plt.subplots()
-x, y = centers_to_edges(t, high_freqs)
-mesh = ax.pcolormesh(x, y, power20_high, cmap='RdBu_r',vmin=vmin, vmax=vmax)
-ax.set_title("High Gamma NB (65-80 Hz) - ONH (N=" + str(len(subjlist_o)) + ")", y=1.03)
-ax.set(ylim=high_freqs[[0, -1]], xlabel="Time (s)")
+x, y = centers_to_edges(t, freqs)
+mesh = ax.pcolormesh(x, y, power20_all, cmap='RdBu_r',vmin=vmin, vmax=vmax)
+ax.set_title("Gamma NB (N=" + str(len(subjlist_y)) + ")", y=1.03)
+ax.set(ylim=freqs[[0, -1]], xlabel="Time (s)")
 fig.colorbar(mesh)
 plt.tight_layout()
 plt.show()
 
-plt.savefig(save_loc + 'ONH_highGamma_NB.png', dpi=500)
+# plt.savefig(save_loc + 'ONH_highGamma_NB.png', dpi=500)
+
+###Trial whatever -- Plot in spectrum 
+
+plt.plot(freqs, power20_all.mean(axis=1))
+plt.xlim(30,80)
+plt.show()

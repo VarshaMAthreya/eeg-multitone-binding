@@ -25,28 +25,36 @@ xy = _pol_to_cart(sph[:, 1:][:, ::-1]) * 0.05
 #Calculating my evoked array
 save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
 save_epochs_loc = 'D:/PhD/Data/Epochs-fif/'
-save_mat_loc = 'D:/PhD/Data/Binding_matfiles/'
+save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 
-subjlist = ['S273','S268','S269','S274','S282','S285','S259','S277','S279','S280','S270','S271','S281','S290','S284',
-              'S303','S288','S260','S341','S312','S347','S340','S078','S069', 'S088','S072','S308','S344','S105','S291','S310','S339']
+subjlist = ['S273','S268','S269','S274','S282',
+              'S285','S272','S259','S277','S279',
+              'S280','S270','S271','S281','S290',
+              'S284','S305','S303','S288','S260',
+              'S309','S288','S341','S352','S312',
+              'S347','S340',
+              'S078','S069', 'S355','S088','S342',
+            'S072','S358','S308','S344','S105',
+            'S345','S291','S337','S310','S339']
+
 evokeds = []
 
 evokeds_y = []
 evokeds_o =[]
 # evoked=a, evoked1 = b, evoked2 = c, evoked3 = c,fs=4096, t=epochs.times
-gfps20_y = np.zeros((len(subjlist),22529))
-evk_y = np.zeros((len(subjlist),22529))
+gfps20_y = np.zeros((len(subjlist),23758))
+evk_y = np.zeros((len(subjlist),23758))
 
 for subj in range(len(subjlist)):
     sub = subjlist[subj]
-    dat = io.loadmat(save_mat_loc + sub + '_allevoked0.4.mat', squeeze_me=True)
+    dat = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_ALlChan.mat', squeeze_me=True)
     dat.keys()
-    evoked_y = dat['evoked']
+    evoked_y = dat['evkd7'][0:32]
     # evoked1_y = dat['evoked1']
     # evoked2_y = dat['evoked2']
     # evoked3_y = dat['evoked3']
-    fs = dat['fs']
-    t = dat['t']  
+    # fs = dat['fs']
+    t = dat['t_full']    
     gfp20_y=evoked_y.std(axis=0)   
     gfps20_y[subj,:]=gfp20_y
     evokeds_y += [evoked_y,]

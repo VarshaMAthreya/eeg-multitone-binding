@@ -14,6 +14,7 @@ import numpy as np
 from scipy.stats import sem
 import pandas as pd
 import seaborn as sns
+import matplotlib.patches as patches
 
 plt.switch_backend('QT5Agg')  # Making the plots interactive (Scrollable)
 warnings.filterwarnings('ignore')
@@ -25,7 +26,7 @@ plt.rc('xtick', labelsize=11)
 plt.rc('ytick', labelsize=11) 
 
 #%%Setting up stuff
-fig_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/GreenLight/'
+fig_loc = 'C:/Users/vmysorea/Desktop/PhD/Conferences/ARO 2024/Aging/Figures/'
 save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 data_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/'
 
@@ -43,7 +44,7 @@ subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
 
 for subj in range(len(subjlist)):
     sub = subjlist [subj]
-    dat1 = io.loadmat(save_mat_loc + sub + '_0.4-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+    dat1 = io.loadmat(save_mat_loc + sub + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
     dat1.keys()
     t = dat1['t']
     t_full = dat1['t_full']
@@ -68,7 +69,6 @@ def group_age(age):
     else:
         return 'ONH'
 
-    
 dat['age_group'] = dat['Age'].apply([group_age])
 age_groups = dat.groupby(['age_group'], sort=False)
 
@@ -102,7 +102,6 @@ picks = [4, 25, 30, 31]         #Took off the Cs
 
 picks_ss = [3, 30, 26, 4, 25, 7, 31, 22, 8, 21, 11, 12, 18]
 
-
 for age, groups in age_groups:
     group_evkds0 = []  # Initialize lists for each condition and age group
     group_evkds1 = []
@@ -119,7 +118,7 @@ for age, groups in age_groups:
     
     for index, column in groups.iterrows():
         subj = column['Subject']
-        dat = io.loadmat(save_mat_loc + subj + '_0.4-40Hz_Evoked_AllChan.mat', squeeze_me=True)
+        dat = io.loadmat(save_mat_loc + subj + '_1-40Hz_Evoked_AllChan.mat', squeeze_me=True)
         dat.keys()
         evkd0 = dat['evkd0'][picks]
         evkd1 = dat['evkd1'][picks]
@@ -169,7 +168,7 @@ for age, groups in age_groups:
     gfp_all12.append(group_gfp12)
     gfp_all20.append(group_gfp20)
 
-#%%
+#%% Calculating the mean and SEM within each age group for each condition 
 conditions = {
     0: evkds0_all,
     1: evkds1_all,
@@ -178,7 +177,7 @@ conditions = {
     4: evkds4_all,
     5: evkds5_all,
     6: evkds6_all,
-    7: evkds7_all, 
+    7: evkds7_all,
     8: ss_all12,
     9: ss_all20, 
     10: gfp_all12,
@@ -227,13 +226,13 @@ condition_names = { 0: '12 Onset',
 age_group_labels = {'YNH': 'Young (<=40 y)',
                     'ONH': 'Old (>41 y)'}
 
-cond_groups = [(6,7)]
+cond_groups = [(4,5)]
 
 # cond_groups = [(6,7)]
 
 # Create a figure with 3 horizontal subplots
 for cond in cond_groups:  
-    fig, axs = plt.subplots(3, 1, figsize=(4.5,4), sharex= True)
+    fig, axs = plt.subplots(2, 1, figsize=(4.5,4), sharex= True)
 
 # Iterate through age groups
     for age_group_index, age_group in enumerate(age_group_labels.keys()):
@@ -259,7 +258,7 @@ for cond in cond_groups:
         
         # ax.set_ylabel()
         # ax.set_ylim(-2,5.2)
-        ax.set_xlim(-0.1,1.1)
+        # ax.set_xlim(-0.1,1.1)
         ax.grid()
        
         fig.text(-0.0001, 0.5, 'Amplitude (\u03bcV)', va='center', rotation='vertical', fontsize=12)
@@ -298,12 +297,12 @@ age_group_labels = {'YNH': 'Young (<=40 y)',
 
 # Create a figure with 3 subplots
 
-fig, axs = plt.subplots(2, 1, figsize=(6.5, 5), sharex=True, constrained_layout=True)
+fig, axs = plt.subplots(3, 1, figsize=(8, 4.5), sharex=True, constrained_layout=True)
 
 # Loop through conditions and plot in subplots
-for condition_index, condition in enumerate([6, 7]):
+for condition_index, condition in enumerate([1,4,5]):
     ax = axs[condition_index]
-    ax.set_title(condition_names[condition])
+    ax.set_title(condition_names[condition], fontsize=14)
     
     legend_text=[]
     
@@ -315,26 +314,28 @@ for condition_index, condition in enumerate([6, 7]):
         N = age_groups['age_group'].count()[age_group]
         
         # Plot mean with SEM as shaded region
-        ax.plot(t_full, mean_age_group, label=age_group, alpha=0.9)
-        ax.fill_between(t_full, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
+        ax.plot(t, mean_age_group, label=age_group, alpha=0.9)
+        ax.fill_between(t, mean_age_group - sem_age_group, mean_age_group + sem_age_group, alpha=0.3)
         
         legend_text.append(f"{age_group} (N={N})")
         
     if condition_index == 0:
-        ax.legend(labels=legend_text, loc='upper right', fontsize='xx-small')
+        ax.legend(labels=legend_text, loc='upper right', fontsize='small')
     
     # ax.set_ylim(-2,5.1)
-    # ax.set_xlim(-0.1,1.1)
+    ax.set_xlim(-0.1,1.1)
     ax.grid()
     
+    # rect = patches.Rectangle((0.3,0.8), , , linewidth=1, edgecolor='r', facecolor='none')
+    
 plt.subplots_adjust(wspace=0.15,hspace =0.15)    
-plt.xlabel('Time (s)', fontsize =12)
-fig.text(0, 0.5, 'Amplitude (\u03bcV)', va='center', rotation='vertical', fontsize=12)
-fig.suptitle('Picks - Cz, Fz, FC1, FC2', x=1, ha='right', fontsize=10)
+plt.xlabel('Time (s)', fontsize =16)
+fig.text(0, 0.5, 'Amplitude (\u03bcV)', va='center', rotation='vertical', fontsize=16)
+fig.suptitle('Picks - Cz, Fz, FC1, FC2', x=1, ha='right', fontsize=14)
 plt.tight_layout()
 plt.show()
 
-# plt.savefig(fig_loc + 'Binding20_AcrossAges.png', dpi = 500)
+plt.savefig(fig_loc + 'ARO24_Binding20_AcrossAges.png', dpi = 500)
 
 
 #%% Plotting each condition separately -- Helpful for full time viewing 
@@ -348,7 +349,7 @@ condition_names = { 0: '12 Onset',
                      6: '12 Tone', 
                      7: '20 Tone | Picks - Cz, Fz, FC1, FC2', 
                      8: '12 Tone | Sum of Squares', 
-                     9: '20 Tone | Sum of Squares',
+                     9: '20 Tone | Sum of Squares | Cz, Fz, FC1, FC2',
                      10: '12 Tone | GFP', 
                      11: '20 Tone | GFP'}
 
@@ -360,12 +361,12 @@ sns.set_palette ("Dark2")
 age_group_labels = {'YNH': 'Young (<=40 y)',
                     'ONH': 'Old (>41 y)'}
 
-fig, ax = plt.subplots(figsize=(8, 4), constrained_layout=True)
+fig, ax = plt.subplots(figsize=(8, 4.5), constrained_layout=True)
 
 condition_to_plot = 9
 
 # Plot the selected condition in the subplot
-ax.set_title(condition_names[condition_to_plot])
+# ax.set_title(condition_names[condition_to_plot], fontsize = 16)
 
 legend_text = []
 
@@ -382,9 +383,9 @@ for age_group_index, age_group in enumerate(age_group_labels.keys()):
 
     legend_text.append(f"{age_group} (N={N})")
 
-ax.legend(labels=legend_text, loc='upper right', fontsize='xx-small')
+ax.legend(labels=legend_text, loc='upper right', fontsize='small')
 
-ax.set_ylim(0, 3.1e-4)
+ax.set_ylim(0, 3*1e-4)
 ax.set_xlim(-0.2, 5.5)
 # ax.grid()
 
@@ -393,6 +394,19 @@ for x_value in (0, 1, 2, 3, 4, 5) :
     
 y_limits = ax.get_ylim()
 
+# labels = ["Stim On", "Stim Off"]
+# for x, label in zip([0,5], labels):
+#     ax.text(x, y_limits[1] + 0.1, label, ha='center',weight='bold')
+    
+# coh_labels = ["Incoherent", "Coherent", "Incoherent", "Coherent","Incoherent"]
+# for x, label in zip([0.55,1.5,2.5,3.5,4.5], coh_labels):
+#     ax.text(x, y_limits[1] - 1.1, label, ha='center', weight='bold', fontsize = 14)
+        
+# shaded_regions = [(1.35, 1.8), (2.35, 2.8), (3.35, 3.8), (4.35, 4.8)]
+# for start, end in shaded_regions:
+#     ax.fill_between(x=[start, end], y1=y_limits[0], y2=y_limits[1], color='gray', alpha=0.3)
+
+#For SS
 labels = ["Stim On", "Stim Off"]
 for x, label in zip([0,5], labels):
     ax.text(x, y_limits[1] + 0.05e-4, label, ha='center',weight='bold')
@@ -405,11 +419,105 @@ shaded_regions = [(1.35, 1.8), (2.35, 2.8), (3.35, 3.8), (4.35, 4.8)]
 for start, end in shaded_regions:
     ax.fill_between(x=[start, end], y1=y_limits[0], y2=y_limits[1], color='gray', alpha=0.3)
 
-plt.xlabel('Time (s)', fontsize=12)
-# plt.ylabel('Global Field Power (\u03bcV)', fontsize=12)
-plt.ylabel('Sum of Squares (\u03bcV $\mathregular{^{2}}$)', fontsize=12)
-# plt.suptitle('Picks - Cz, Fz, FC1, FC2', x=0.8, ha='right', fontsize=10)
+plt.xlabel('Time (s)', fontsize=16)
+# plt.ylabel('Amplitude (\u03bcV)', fontsize=16)
+plt.ylabel('Sum of Squares (\u03bcV $\mathregular{^{2}}$)', fontsize=16)
+# plt.suptitle('20 Tone | Picks - Cz, Fz, FC1, FC2', x=0.8, ha='right', fontsize=16)
+plt.suptitle('20 Tone | Picks - Cz, Fz, FC1, FC2', fontsize=16)
 plt.tight_layout()
 plt.show()
 
-plt.savefig(fig_loc + "SS20_FullTime_0.1-40Hz_AcrossAge.png", dpi=500, bbox_inches="tight")
+plt.savefig(fig_loc + "ARO24_SS20_FullTime_1-40Hz_AcrossAge.png", dpi=500)
+
+#%% Plot topomaps for 5 second duration 
+
+import mne
+from mne.channels.layout import _pol_to_cart, _cart_to_sph
+
+montage = mne.channels.make_standard_montage('biosemi32')
+
+chs = montage._get_ch_pos()
+ch_names, xyz = zip(*[(ich, ixyz) for ich, ixyz in chs.items()])
+xyz = np.vstack(xyz)
+
+mne.viz.plot_montage(montage)
+sph = _cart_to_sph(xyz)
+xy = _pol_to_cart(sph[:, 1:][:, ::-1]) * 0.05
+
+### Calculating times for response, steady-state for onset, incoherent-coherent and coherent-incoherent transitions 
+
+intervals = [(0, 0.29), (0.3, 0.8), (1.0, 1.29), (1.3, 1.8), (2.0, 2.29), (2.3, 2.8), (3.0, 3.29), (3.3, 3.8), (4.0, 4.29), (4.3,4.8), (5.0,5.29)]
+
+t_values = []
+for start, end in intervals:
+    t_values.append((t_full >= start) & (t_full <= end))
+    
+
+
+# conditions = {6: evkds6_all,
+#               7: evkds7_all}
+
+# evoked12 = []
+# evoked20 = []
+# for a in t_values:
+#     for subjlist in conditions.values():
+#         evoked_subj12 = [arr[a] for arr in subjlist]
+#         evoked12.append(evoked_subj12)
+#     evokeds12.append(evoked12)
+#     evokeds20.append(evoked20)
+    
+
+#Getting the evoked responses for the above specified times  
+evokeds12 = []
+evokeds20 = []
+
+for i in t_values:
+    evoked12 = []
+    for subjlist in evkds6_all:
+        evoked_subj = []
+        for arr in subjlist:
+            evoked_subj.append(arr[i])
+        evoked12.append(evoked_subj)
+    evokeds12.append(evoked12)
+    
+for i in t_values:
+    evoked20 = []
+    for subjlist in evkds7_all:
+        evoked_subj = []
+        for arr in subjlist:
+            evoked_subj.append(arr[i])
+        evoked20.append(evoked_subj)
+    evokeds20.append(evoked20)
+    
+#%% Calculating the mean and SEM within each age group for each condition 
+conditions = {
+    0: evokeds12,
+    1: evokeds20}
+
+mean_data = {}
+
+for condition, evkds_all in conditions.items():
+    mean_age_group = []
+    sem_age_group = []
+    
+    for age_group_evkds in evkds_all:
+        mean_subjects = (np.mean(age_group_evkds, axis=0))*1e6
+        
+        mean_age_group.append(mean_subjects)
+      
+    mean_data[condition] = mean_age_group
+
+# Replace this with difference calculated from 5-second evoked response
+array_to_plot_as_topomap = np.mean(mean_data,axis=0)
+
+
+# Replace this with difference calculated from 5-second evoked response
+array_to_plot_as_topomap = evoked.mean(axis=1)
+
+fig=mne.viz.plot_topomap(array_to_plot_as_topomap, xy, contours=15, res=128, size=4.5)
+# plt.subplots_adjust(left=0.01, right=0.99, bottom=0.01, top=0.88)
+plt.tight_layout()
+plt.rcParams['axes.titlepad'] = 0
+plt.title('Across Age', fontsize=14,loc='center')
+
+plt.savefig(save_loc + 'GDT_All_Topomap', dpi=300)
