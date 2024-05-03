@@ -25,11 +25,9 @@ plt.rcParams['figure.dpi'] = 120
 save_fig = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/FinalThesis/ForThesisDoc/'
 save_mat_loc = 'D:/PhD/Data/Binding_matfiles/1-40Hz/'
 
-<<<<<<< Updated upstream
-=======
+
 # subjlist = ['S104'] # Have saved only 4 channels evoked response!!!!
 
->>>>>>> Stashed changes
 subjlist = ['S273', 'S069', 'S072', 'S078', 'S088', 
             'S105', 'S207', 'S259', 'S260', 'S268', 
             'S269', 'S270', 'S271', 'S272', 'S274', 
@@ -40,8 +38,6 @@ subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
             'S339', 'S340', 'S341', 'S342', 'S344', 
             'S345', 'S347', 'S352', 'S355', 'S358']
 
-<<<<<<< Updated upstream
-=======
 subjlist = ['S069', 'S072', 'S078', 'S088', 'S105', 
             'S259', 'S260', 'S268', 'S269', 'S270', 
             'S271', 'S272', 'S273', 'S274', 'S277', 
@@ -52,7 +48,6 @@ subjlist = ['S069', 'S072', 'S078', 'S088', 'S105',
             'S344', 'S345', 'S347', 'S352', 'S355', 
             'S358']
 
->>>>>>> Stashed changes
 #Uncommon == 'S105', 'S272', 'S309', 'S337', 'S345','S355', 'S358'
 
 #Removed --  'S273'-- Looks like equal amount of positive and negative components for GFP ; 

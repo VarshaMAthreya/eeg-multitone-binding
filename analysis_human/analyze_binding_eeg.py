@@ -225,7 +225,7 @@ for subj in subjlist:
 #Plotting onsets for both events combined
     epochs = mne.Epochs(raw, eves, event_id=[1, 2], baseline=(-0.3, 0), proj=True, tmin=-0.3, tmax=1.1, reject=dict(eeg=200e-6))
     evoked = epochs.average()
-    # Onset_Total = evoked.plot(titles= subj + 'Combined Onset - 12,20')
+    Onset_Total = evoked.plot(titles= subj + 'Combined Onset - 12,20')
 #OnsetResponse_All3.savefig(save_loc + 'OnsetResponse_All3_.png' + subj, dpi=300)
 
 # ##Plotting full time
@@ -298,75 +298,75 @@ for subj in subjlist:
         evkds = [evkd[c[0]], evkd[c[1]]]
 #     #mne.viz.plot_compare_evokeds(evkds,title=comp_labels[it]
 #%% Make Plots outside of MNE
-    # picks=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-    # picks = [4, 7, 22, 25, 30, 31]
-    # combos_comp = [[0,1], [10,12], [11,13]]
-    # comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
+    picks=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+    picks = [4, 7, 22, 25, 30, 31]
+    combos_comp = [[0,1], [10,12], [11,13]]
+    comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
     
-    # fig, ax = plt.subplots(3,1,sharex=True)
+    fig, ax = plt.subplots(3,1,sharex=True)
     
     t = epochs[0].times
     
-    # for cnd in range(len(combos_comp)):
-    #     cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
-    #     cz_mean_12 = cz_12.mean(axis=0)
-    #     cz_sem_12 = scipy.stats.sem(cz_12, axis=0)
+    for cnd in range(len(combos_comp)):
+        cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
+        cz_mean_12 = cz_12.mean(axis=0)
+        cz_sem_12 = scipy.stats.sem(cz_12, axis=0)
     
-    #     cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
-    #     cz_mean_20 = cz_20.mean(axis=0)
-    #     cz_sem_20 = scipy.stats.sem(cz_20, axis=0)
-    #     #cz_sem_20 = cz_ep_20.std(axis=0) / np.sqrt(cz_ep_20.shape[0])
+        cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
+        cz_mean_20 = cz_20.mean(axis=0)
+        cz_sem_20 = scipy.stats.sem(cz_20, axis=0)
+        #cz_sem_20 = cz_ep_20.std(axis=0) / np.sqrt(cz_ep_20.shape[0])
     
-    #     ax[cnd].plot(t,cz_mean_12,label='12')
-    #     ax[cnd].fill_between(t,cz_mean_12 - cz_sem_12, cz_mean_12 + cz_sem_12,alpha=0.5)
+        ax[cnd].plot(t,cz_mean_12,label='12')
+        ax[cnd].fill_between(t,cz_mean_12 - cz_sem_12, cz_mean_12 + cz_sem_12,alpha=0.5)
     
-    #     ax[cnd].plot(t,cz_mean_20,label='20')
-    #     ax[cnd].fill_between(t,cz_mean_20 - cz_sem_20, cz_mean_20 + cz_sem_20,alpha=0.5)
+        ax[cnd].plot(t,cz_mean_20,label='20')
+        ax[cnd].fill_between(t,cz_mean_20 - cz_sem_20, cz_mean_20 + cz_sem_20,alpha=0.5)
     
-    #     ax[cnd].set_title(comp_labels[cnd])
-    #     ax[cnd].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
+        ax[cnd].set_title(comp_labels[cnd])
+        ax[cnd].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
     
-    # ax[0].legend()
-    # ax[2].set_xlabel('Time (sec)')
-    # ax[1].set_ylabel('Amplitude (' + u"\u03bcA" + ')')
-    # #ax.set_ylim (-5 * 1e-6 , 5 * 1e-6)
-    # plt.suptitle(subj + '_Binding')
-    # plt.show()
-#plt.savefig(os.path.join(save_loc,subj + '_12vs20.png'),format='png', dpi=300)
+    ax[0].legend()
+    ax[2].set_xlabel('Time (sec)')
+    ax[1].set_ylabel('Amplitude (' + u"\u03bcA" + ')')
+    #ax.set_ylim (-5 * 1e-6 , 5 * 1e-6)
+    plt.suptitle(subj + '_Binding')
+    plt.show()
+# plt.savefig(os.path.join(save_loc,subj + '_12vs20.png'),format='png', dpi=300)
 
 #%% Calculate avg shift from baseline during A-B and B-A from 300-800 ms
 
-#     combos_comp = [[0,1], [10,12], [11,13]]
-#     comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
+    combos_comp = [[0,1], [10,12], [11,13]]
+    comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
 
-#     t1 = t>=0.3
-#     t2 = t<=0.8
-#     t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
-#     #t3= np.logical_and(t1,t2) #Subtracting t2-t1
-#     cz_12_t3_all=[]
-#     cz_20_t3_all=[]
+    t1 = t>=0.3
+    t2 = t<=0.8
+    t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
+    #t3= np.logical_and(t1,t2) #Subtracting t2-t1
+    cz_12_t3_all=[]
+    cz_20_t3_all=[]
 
-#     for cnd in range(len(combos_comp)):
-#         cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
-#         cz_12_t3_Onset = cz_12[:,t3]
-#         cz_12_t3_avg = abs(cz_12_t3_Onset).mean(axis=0)
-#         cz_12_t3_all += (cz_12_t3_avg,)
-#         print(subj + '-12 Shift from baseline=' , cz_12_t3_avg)
+    for cnd in range(len(combos_comp)):
+        cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
+        cz_12_t3_Onset = cz_12[:,t3]
+        cz_12_t3_avg = abs(cz_12_t3_Onset).mean(axis=0)
+        cz_12_t3_all += (cz_12_t3_avg,)
+        print(subj + '-12 Shift from baseline=' , cz_12_t3_avg)
 
-#         cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
-#         cz_20_t3_Onset = cz_20[:,t3]
-#         cz_20_t3_avg = cz_20_t3_Onset.mean(axis=0)
-#         cz_20_t3_all += (cz_20_t3_avg,)
-#         print(subj + '-20 Shift from baseline=' , cz_20_t3_avg)
+        cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
+        cz_20_t3_Onset = cz_20[:,t3]
+        cz_20_t3_avg = cz_20_t3_Onset.mean(axis=0)
+        cz_20_t3_all += (cz_20_t3_avg,)
+        print(subj + '-20 Shift from baseline=' , cz_20_t3_avg)
         
-#     #%% Subtracting *coherent-incoherent* baseline shift to be similar to GFP for mean of 32 channels 
+    #%% Subtracting *coherent-incoherent* baseline shift to be similar to GFP for mean of 32 channels 
     
-#     dcshift_12 = cz_12_t3_all [combos_comp [1][0] - combos_comp [2][0]]
-#     dcshift_20 = cz_20_t3_all [combos_comp [1][1] - combos_comp [2][1]]
+    dcshift_12 = cz_12_t3_all [combos_comp [1][0] - combos_comp [2][0]]
+    dcshift_20 = cz_20_t3_all [combos_comp [1][1] - combos_comp [2][1]]
     
-#     mat_ids = dict(combos_comp = combos_comp, cz_12_t3_all=cz_12_t3_all ,cz_20_t3_all=cz_20_t3_all, 
-#                    dcshift_12=dcshift_12, dcshift_20=dcshift_20)
-#     savemat(save_loc_mat + subj + '_Binding(300-800ms)_1-40_Shifts_AllChans.mat', mat_ids)
+    mat_ids = dict(combos_comp = combos_comp, cz_12_t3_all=cz_12_t3_all ,cz_20_t3_all=cz_20_t3_all, 
+                    dcshift_12=dcshift_12, dcshift_20=dcshift_20)
+    savemat(save_loc_mat + subj + '_Binding(300-800ms)_1-40_Shifts_AllChans.mat', mat_ids)
 
 # #%% Save Epochs, evokeds for 32 channels for 8 different conditions - Pickles and mat files 
 
