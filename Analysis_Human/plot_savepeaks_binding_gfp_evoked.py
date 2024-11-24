@@ -25,6 +25,7 @@ plt.rcParams['figure.dpi'] = 120
 save_fig = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/MTB_Analysis/FinalThesis/ForThesisDoc/'
 save_mat_loc = 'C:/Users/varsh/Desktop/PhD/Data/Binding_matfiles/0.5-40Hz/'
 
+<<<<<<< HEAD
 # subjlist = ['S104'] # Have saved only 4 channels evoked response!!!!
 
 # subjlist = ['S273', 'S069', 'S072', 'S078', 'S088',
@@ -47,6 +48,30 @@ subjlist = ['S069', 'S072', 'S078', 'S088', 'S104',
             'S305', 'S308', 'S309', 'S310', 'S312',
             'S337', 'S339', 'S340', 'S341', 'S342',
             'S344', 'S345',  'S352', 'S355','S358']
+=======
+
+# subjlist = ['S104'] # Have saved only 4 channels evoked response!!!!
+
+subjlist = ['S273', 'S069', 'S072', 'S078', 'S088', 
+            'S105', 'S207', 'S259', 'S260', 'S268', 
+            'S269', 'S270', 'S271', 'S272', 'S274', 
+            'S277', 'S279', 
+            'S280', 'S281', 'S282', 'S284', 'S285', 
+            'S288', 'S290', 'S291', 'S303', 'S305', 
+            'S308', 'S309', 'S310', 'S312', 'S337', 
+            'S339', 'S340', 'S341', 'S342', 'S344', 
+            'S345', 'S347', 'S352', 'S355', 'S358']
+
+subjlist = ['S069', 'S072', 'S078', 'S088', 'S105', 
+            'S259', 'S260', 'S268', 'S269', 'S270', 
+            'S271', 'S272', 'S273', 'S274', 'S277', 
+            'S279', 'S280', 'S281', 'S282', 'S284', 
+            'S285', 'S288', 'S290', 'S291', 'S303', 
+            'S305', 'S308', 'S309', 'S310', 'S312', 
+            'S337', 'S339', 'S340', 'S341', 'S342', 
+            'S344', 'S345', 'S347', 'S352', 'S355', 
+            'S358']
+>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20
 
 #Uncommon == 'S105', 'S272', 'S309', 'S337', 'S345','S355', 'S358'
 
