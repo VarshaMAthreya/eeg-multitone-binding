@@ -11,12 +11,11 @@ Created on Mon Sep  5 15:13:20 2022
 #%% Initializing...
 
 import sys
-# sys.path.append('C:/Users/vmysorea/Documents/mne-python/')
-# sys.path.append('C:/Users/vmysorea/Documents/ANLffr/')
+sys.path.append('C:/Users/vmysorea/Documents/mne-python/')
+sys.path.append('C:/Users/vmysorea/Documents/ANLffr/')
 import warnings
 import mne
 import numpy as np
-from mne.preprocessing.ssp import compute_proj_epochs
 from anlffr.helper import biosemi2mne as bs
 from matplotlib import pyplot as plt
 import os
@@ -36,24 +35,13 @@ plt.rcParams['figure.dpi'] = 120
 
 # %% Loading subjects, reading data, mark bad channels
 
-froot = 'C:/Users/varsh/Desktop/PhD/Data/Binding/'  # file location
-save_loc='C:/Users/varsh/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
-save_loc_mat= 'C:/Users/varsh/Desktop/PhD/Data/Binding_matfiles/0.5-40Hz/'
-# save_epochs_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Epochs-fif/'
+froot = 'D:/PhD/Data/MTB_EP - GDT, Binding, mTRF/Binding/'  # file location
+save_loc='C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Figures/'
+save_loc_mat= 'D:/PhD/Data/Binding_matfiles/0.5-40Hz/'
+save_epochs_loc = 'C:/Users/vmysorea/Desktop/PhD/Stim_Analysis/Binding/Human_Analysis/Epochs-fif/'
 
-#From Rav
+subjlist =  ['S342']
 
-subjlist = ['S211']
-# subjlist = ['S069', 'S072','S078','S088', 'S104', 'S105', 'S207',
-#             'S259', 'S260', 'S268', 'S269', 'S270','S271', 'S272', 'S273',
-#             'S274', 'S277','S279', 'S280', 'S282', 'S284', 'S285', 'S288',
-#             'S290' ,'S281','S291', 'S303', 'S305', 'S308', 'S309', 'S310',
-#             'S312', 'S339', 'S340', 'S341', 'S344', 'S345', 'S352',
-#             'S355', 'S358']
-
-#Need to change ref chans to A7 and A24 for 'S337'
-# Done --
-# 'S211',
 condlist = [1, 2]  # List of conditions- Coherence of 12 and 20 tones
 condnames = ['12', '20']
 
@@ -209,6 +197,9 @@ for subj in subjlist:
     if subj == 'S341':
         raw.info['bads'].append('A16')
         raw.info['bads'].append('A7')
+
+    if subj == 'S342':
+      raw.info['bads'].append('A29')
 #%% Filtering for cortical responses
 
     raw.filter(0.5, 40.)
@@ -216,12 +207,10 @@ for subj in subjlist:
 
 # %% Blink Rejection
 
-    # blinks = find_blinks(raw) #Mine
-    # From Rav
-    blinks = find_blinks(raw,ch_name = ['A1'],thresh = 100e-6, l_trans_bandwidth = 0.5, l_freq =1.0)
+    blinks = find_blinks(raw)
     # raw.plot(events=blinks, duration=25.0, n_channels=32, scalings=dict(eeg=200e-6))
-    epochs_blinks = mne.Epochs(raw, blinks, event_id=998, baseline=(-0.25, 0), reject=dict(eeg=500e-6), tmin=-0.25, tmax=0.25) #Changed baseline from (-0.25,0.25) to match Rav
-    blink_proj = compute_proj_epochs(epochs_blinks, n_grad=0,n_mag=0,n_eeg=8,verbose='DEBUG') #Changed n_eeg from 1 to 8 to match Rav
+    epochs_blinks = mne.Epochs(raw, blinks, event_id=998, baseline=(-0.25, 0.25), reject=dict(eeg=500e-6), tmin=-0.25, tmax=0.25)
+    blink_proj = compute_proj_epochs(epochs_blinks, n_eeg=1)
     raw.add_proj(blink_proj)  # Adding the n=blink proj to the data -- removal of blinks
     # raw.plot_projs_topomap()     # Visualizing the spatial filter
 
@@ -237,15 +226,9 @@ for subj in subjlist:
 #         evoked.plot(titles=subj + 'Onset Response -' + condname) #picks=picks
 
 #Plotting onsets for both events combined
-<<<<<<<< HEAD:Analysis_Human/analyze_binding_eeg.py
-    # epochs = mne.Epochs(raw, eves, event_id=[1, 2], baseline=(-0.3, 0), proj=True, tmin=-0.3, tmax=1.1, reject=dict(eeg=200e-6))
-    # evoked = epochs.average()
-    # Onset_Total = evoked.plot(titles= subj + 'Combined Onset - 12,20')
-========
     epochs = mne.Epochs(raw, eves, event_id=[1, 2], baseline=(-0.3, 0), proj=True, tmin=-0.3, tmax=1.1, reject=dict(eeg=200e-6))
     evoked = epochs.average()
     Onset_Total = evoked.plot(titles= subj + 'Combined Onset - 12,20')
->>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20:analysis_human/analyze_binding_eeg.py
 #OnsetResponse_All3.savefig(save_loc + 'OnsetResponse_All3_.png' + subj, dpi=300)
 
 # ##Plotting full time
@@ -272,19 +255,6 @@ for subj in subjlist:
             events_add = eves[eves[:,2] == int(cond+1),:] + [int(fs*(e+1)),int(0),evnt_num - (cond+1)]
             eves_AB = np.concatenate((eves_AB,events_add),axis=0)
 
-   #%% Plot Data
-
-    conds = ['12','20'] #14,18 for S211 from earlier date
-    reject = dict(eeg=150e-6)
-    epochs_whole = []
-    evkd_whole = []
-
-    for cnd in range(len(conds)):
-        ep_cnd = mne.Epochs(raw,eves,cnd+1,tmin=-0.3,tmax=5.3,reject = reject, baseline = (-0.1,0.))
-        epochs_whole.append(ep_cnd)
-        evkd_whole.append(ep_cnd.average())
-        # evkd_whole[cnd].plot(titles=conds[cnd])
-
 #%% Extract Different Conditions
 
     conds = ['12_0', '20_0', '12_AB1', '12_BA1', '12_AB2', '12_BA2', '20_AB1','20_BA1','20_AB2','20_BA2']
@@ -305,7 +275,7 @@ for subj in subjlist:
         ep_cnd = mne.Epochs(raw,eves_AB,list(np.array(ev_combos[it])+1),tmin=-0.2,tmax=1.1, reject = reject, baseline = (-0.1,0.))
         epochs.append(ep_cnd)
         evkd.append(ep_cnd.average())
-        # evkd[cnd].plot(picks=31,titles=conds[cnd])
+        #evkd[cnd].plot(picks=31,titles=conds[cnd])
 
     # Also get whole interval without baselining each interval
     conds.extend(['12', '20'])
@@ -329,42 +299,26 @@ for subj in subjlist:
 
     for it,c in enumerate(combos_comp):
         evkds = [evkd[c[0]], evkd[c[1]]]
-    # mne.viz.plot_compare_evokeds(evkds,title=comp_labels[it])
+#     #mne.viz.plot_compare_evokeds(evkds,title=comp_labels[it]
 #%% Make Plots outside of MNE
     picks=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-<<<<<<<< HEAD:Analysis_Human/analyze_binding_eeg.py
     # picks = [4, 7, 22, 25, 30, 31]
     combos_comp = [[0,1], [10,12], [11,13]]
     comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
 
-    t = epochs[0].times
-
     fig, ax = plt.subplots(3,1,sharex=True)
 
-========
-    picks = [4, 7, 22, 25, 30, 31]
-    combos_comp = [[0,1], [10,12], [11,13]]
-    comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
-    
-    fig, ax = plt.subplots(3,1,sharex=True)
-    
     t = epochs[0].times
-    
->>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20:analysis_human/analyze_binding_eeg.py
+
     for cnd in range(len(combos_comp)):
         cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
         cz_mean_12 = cz_12.mean(axis=0)
         cz_sem_12 = scipy.stats.sem(cz_12, axis=0)
-<<<<<<<< HEAD:Analysis_Human/analyze_binding_eeg.py
 
-========
-    
->>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20:analysis_human/analyze_binding_eeg.py
         cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
         cz_mean_20 = cz_20.mean(axis=0)
         cz_sem_20 = scipy.stats.sem(cz_20, axis=0)
         #cz_sem_20 = cz_ep_20.std(axis=0) / np.sqrt(cz_ep_20.shape[0])
-<<<<<<<< HEAD:Analysis_Human/analyze_binding_eeg.py
 
         ax[cnd].plot(t,cz_mean_12,label='12')
         ax[cnd].fill_between(t,cz_mean_12 - cz_sem_12, cz_mean_12 + cz_sem_12,alpha=0.5)
@@ -375,18 +329,6 @@ for subj in subjlist:
         ax[cnd].set_title(comp_labels[cnd])
         ax[cnd].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
 
-========
-    
-        ax[cnd].plot(t,cz_mean_12,label='12')
-        ax[cnd].fill_between(t,cz_mean_12 - cz_sem_12, cz_mean_12 + cz_sem_12,alpha=0.5)
-    
-        ax[cnd].plot(t,cz_mean_20,label='20')
-        ax[cnd].fill_between(t,cz_mean_20 - cz_sem_20, cz_mean_20 + cz_sem_20,alpha=0.5)
-    
-        ax[cnd].set_title(comp_labels[cnd])
-        ax[cnd].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
-    
->>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20:analysis_human/analyze_binding_eeg.py
     ax[0].legend()
     ax[2].set_xlabel('Time (sec)')
     ax[1].set_ylabel('Amplitude (' + u"\u03bcA" + ')')
@@ -397,74 +339,40 @@ for subj in subjlist:
 
 #%% Calculate avg shift from baseline during A-B and B-A from 300-800 ms
 
-<<<<<<<< HEAD:Analysis_Human/analyze_binding_eeg.py
-    # combos_comp = [[0,1], [10,12], [11,13]]
-    # comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
+#     picks = [4, 25, 30, 31]
+#     combos_comp = [[0,1], [10,12], [11,13]]
+#     comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
 
-    # t1 = t>=0.3
-    # t2 = t<=0.8
-    # t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
-    # #t3= np.logical_and(t1,t2) #Subtracting t2-t1
-    # cz_12_t3_all=[]
-    # cz_20_t3_all=[]
+#     t1 = t>=0.3
+#     t2 = t<=0.8
+#     t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
+#     #t3= np.logical_and(t1,t2) #Subtracting t2-t1
+#     cz_12_t3_all=[]
+#     cz_20_t3_all=[]
+# #
+#     for cnd in range(len(combos_comp)):
+#         cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
+#         cz_12_t3_Onset = cz_12[:,t3]
+#         cz_12_t3_avg = abs(cz_12_t3_Onset).mean(axis=0)
+#         cz_12_t3_all += (cz_12_t3_avg,)
+#         print(subj + '-12 Shift from baseline=' , cz_12_t3_avg)
 
-    # for cnd in range(len(combos_comp)):
-    #     cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
-    #     cz_12_t3_Onset = cz_12[:,t3]
-    #     cz_12_t3_avg = abs(cz_12_t3_Onset).mean(axis=0)
-    #     cz_12_t3_all += (cz_12_t3_avg,)
-    #     print(subj + '-12 Shift from baseline=' , cz_12_t3_avg)
+#         cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
+#         cz_20_t3_Onset = cz_20[:,t3]
+#         cz_20_t3_avg = cz_20_t3_Onset.mean(axis=0)
+#         cz_20_t3_all += (cz_20_t3_avg,)
+#         print(subj + '-20 Shift from baseline=' , cz_20_t3_avg)
 
-    #     cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
-    #     cz_20_t3_Onset = cz_20[:,t3]
-    #     cz_20_t3_avg = cz_20_t3_Onset.mean(axis=0)
-    #     cz_20_t3_all += (cz_20_t3_avg,)
-    #     print(subj + '-20 Shift from baseline=' , cz_20_t3_avg)
-========
-    combos_comp = [[0,1], [10,12], [11,13]]
-    comp_labels = ['Onset', 'Incoherent to Coherent', 'Coherent to Incoherent']
-
-    t1 = t>=0.3
-    t2 = t<=0.8
-    t3 = np.array([t2[i] and t1[i] for i in range(len(t1))])
-    #t3= np.logical_and(t1,t2) #Subtracting t2-t1
-    cz_12_t3_all=[]
-    cz_20_t3_all=[]
-
-    for cnd in range(len(combos_comp)):
-        cz_12 = (epochs[combos_comp[cnd][0]].get_data()[:,picks,:]).mean(axis=1)
-        cz_12_t3_Onset = cz_12[:,t3]
-        cz_12_t3_avg = abs(cz_12_t3_Onset).mean(axis=0)
-        cz_12_t3_all += (cz_12_t3_avg,)
-        print(subj + '-12 Shift from baseline=' , cz_12_t3_avg)
-
-        cz_20 = (epochs[combos_comp[cnd][1]].get_data()[:,picks,:]).mean(axis=1)
-        cz_20_t3_Onset = cz_20[:,t3]
-        cz_20_t3_avg = cz_20_t3_Onset.mean(axis=0)
-        cz_20_t3_all += (cz_20_t3_avg,)
-        print(subj + '-20 Shift from baseline=' , cz_20_t3_avg)
-        
-    #%% Subtracting *coherent-incoherent* baseline shift to be similar to GFP for mean of 32 channels 
-    
-    dcshift_12 = cz_12_t3_all [combos_comp [1][0] - combos_comp [2][0]]
-    dcshift_20 = cz_20_t3_all [combos_comp [1][1] - combos_comp [2][1]]
-    
-    mat_ids = dict(combos_comp = combos_comp, cz_12_t3_all=cz_12_t3_all ,cz_20_t3_all=cz_20_t3_all, 
-                    dcshift_12=dcshift_12, dcshift_20=dcshift_20)
-    savemat(save_loc_mat + subj + '_Binding(300-800ms)_1-40_Shifts_AllChans.mat', mat_ids)
->>>>>>>> 36c2a1ce1bf4d67561a2652c7e4e2b4745930f20:analysis_human/analyze_binding_eeg.py
-
-    #%% Subtracting *coherent-incoherent* baseline shift to be similar to GFP for mean of 32 channels
+    #% Subtracting *coherent-incoherent* baseline shift to be similar to GFP for mean of 32 channels
 
     # dcshift_12 = cz_12_t3_all [combos_comp [1][0] - combos_comp [2][0]]
     # dcshift_20 = cz_20_t3_all [combos_comp [1][1] - combos_comp [2][1]]
 
     # mat_ids = dict(combos_comp = combos_comp, cz_12_t3_all=cz_12_t3_all ,cz_20_t3_all=cz_20_t3_all,
     #                 dcshift_12=dcshift_12, dcshift_20=dcshift_20)
-    # savemat(save_loc_mat + subj + '_Binding(300-800ms)_0.5-40_Shifts_AllChans.mat', mat_ids)
+    # savemat(save_loc_mat + subj + '_Binding(300-800ms)_1-40_Shifts_AllChans.mat', mat_ids)
 
 # #%% Save Epochs, evokeds for 32 channels for 8 different conditions - Pickles and mat files
-
     save_indexes = [0,1,10,11,12,13,14,15]      # 0 - 12 Onset (Upto 1.1 s)
                                                 # 1 - 20 Onset (Upto 1.1 s)
                                                 # 10 - 12 Incoherent to Coherent
@@ -490,17 +398,17 @@ for subj in subjlist:
     # with open(os.path.join(pickle_loc,subj+'_Binding_0.4_AllChan.pickle'),'wb') as file:
     #     pickle.dump([t, t_full, conds_save, epochs_save,evkd_save],file)
     mat_ids1 = dict(save_indexes=save_indexes, conds_save = conds_save,
-                        evkd0 =evkd_save[0].data,
-                        evkd1 =evkd_save[1].data,
-                        evkd2 =evkd_save[2].data,
-                        evkd3 =evkd_save[3].data,
-                        evkd4 =evkd_save[4].data,
-                        evkd5 =evkd_save[5].data,
-                        evkd6 =evkd_save[6].data,
-                        evkd7 =evkd_save[7].data,
+                        evkd_onset12 =evkd_save[0].data,
+                        evkd_onset20 =evkd_save[1].data,
+                        evkd_coh12 =evkd_save[2].data,
+                        evkd_incoh12 =evkd_save[3].data,
+                        evkd_coh20 =evkd_save[4].data,
+                        evkd_incoh20 =evkd_save[5].data,
+                        evkd_full12 =evkd_save[6].data,
+                        evkd_full20 =evkd_save[7].data,
                         t=t, t_full=t_full)
     savemat(save_loc_mat + subj + '_0.5-40Hz_Evoked_AllChan.mat', mat_ids1)
 
     print ('Woohoooo! Saved -- ' + str(subj) + '!!')
 
-del epochs, evkd, evkd_save,epochs_save
+    del raw, eves, epochs, blinks, evkd, evkd_save, epochs_save, mat_ids1
